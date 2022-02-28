@@ -63,17 +63,17 @@ let dollar_ident = parser
 	| [< '(Dollar i,p) >] -> ("$" ^ i),p
 
 let dollar_ident_macro pack = parser
+    | [< '(((Kwd Function)|(Const (Ident "fn"))),p) when pack <> [] >] -> "function", p
 	| [< '(Const (Ident i),p) >] -> i,p
 	| [< '(Dollar i,p) >] -> ("$" ^ i),p
 	| [< '(Kwd Macro,p) when pack <> [] >] -> "macro", p
 	| [< '(Kwd Extern,p) when pack <> [] >] -> "extern", p
-	| [< '(Kwd Function,p) when pack <> [] >] -> "function", p
 
 let lower_ident_or_macro = parser
+    | [< '(((Kwd Function)|(Const (Ident "fn"))),_) >] -> "function"
 	| [< '(Const (Ident i),p) when is_lower_ident i >] -> i
 	| [< '(Kwd Macro,_) >] -> "macro"
 	| [< '(Kwd Extern,_) >] -> "extern"
-	| [< '(Kwd Function,_) >] -> "function"
 
 let property_ident = parser
 	| [< i,p = ident >] -> i,p
@@ -223,7 +223,7 @@ and parse_type_decl mode s =
 	| [< '(Kwd Using,p1) >] -> parse_using s p1
 	| [< doc = get_doc; meta = parse_meta; c = parse_common_flags; s >] ->
 		match s with parser
-		| [< '(Kwd Function,p1); name = dollar_ident; pl = parse_constraint_params; '(POpen,_); args = psep Comma parse_fun_param; '(PClose,_); t = popt parse_type_hint; s >] ->
+		| [< '(((Kwd Function)|(Const (Ident "fn"))),p1); name = dollar_ident; pl = parse_constraint_params; '(POpen,_); args = psep Comma parse_fun_param; '(PClose,_); t = popt parse_type_hint; s >] ->
 			let e, p2 = (match s with parser
 				| [< e = expr; s >] ->
 					ignore(semicolon s);
@@ -345,14 +345,14 @@ and parse_import' s p1 =
 			in
 			check_resume p resume (fun () -> ());
 			begin match s with parser
+            | [< '(((Kwd Function)|(Const (Ident "fn"))),p) >] ->
+				loop pn (("function",p) :: acc)
 			| [< '(Const (Ident k),p) >] ->
 				loop pn ((k,p) :: acc)
 			| [< '(Kwd Macro,p) >] ->
 				loop pn (("macro",p) :: acc)
 			| [< '(Kwd Extern,p) >] ->
 				loop pn (("extern",p) :: acc)
-			| [< '(Kwd Function,p) >] ->
-				loop pn (("function",p) :: acc)
 			| [< '(Binop OpMult,_) >] ->
 				List.rev acc, IAll
 			| [< >] ->
@@ -395,14 +395,14 @@ and parse_using' s p1 =
 		| [< '(Dot,p) >] ->
 			check_resume p (fun () -> type_path (List.map fst acc) false (punion pn p)) (fun () -> ());
 			begin match s with parser
+            | [< '(((Kwd Function)|(Const (Ident "fn"))),p) >] ->
+				loop pn (("function",p) :: acc)
 			| [< '(Const (Ident k),p) >] ->
 				loop pn ((k,p) :: acc)
 			| [< '(Kwd Macro,p) >] ->
 				loop pn (("macro",p) :: acc)
 			| [< '(Kwd Extern,p) >] ->
 				loop pn (("extern",p) :: acc)
-			| [< '(Kwd Function,p) >] ->
-				loop pn (("function",p) :: acc)
 			| [< >] ->
 				syntax_error (Expected ["identifier"]) s (List.rev acc);
 			end
@@ -491,8 +491,8 @@ and resume tdecl fdecl s =
 		| Kwd _ :: At :: _ | Kwd _ :: DblDot :: At :: _ ->
 			loop (k + 1)
 		(* field declaration *)
-		| Const _ :: Kwd Function :: _
-		| Kwd New :: Kwd Function :: _ when fdecl ->
+		| Const _ :: ((Kwd Function)|(Const (Ident "fn"))) :: _
+		| Kwd New :: ((Kwd Function)|(Const (Ident "fn"))) :: _ when fdecl ->
 			junk_tokens (k - 2);
 			true
 		| Kwd Macro :: _ | Kwd Public :: _ | Kwd Static :: _ | Kwd Var :: _ | Kwd Final :: _ | Kwd Override :: _ | Kwd Dynamic :: _ | Kwd Inline :: _ | Kwd Overload :: _ when fdecl ->
@@ -897,7 +897,7 @@ and parse_enum_param = parser
 	| [< name, _ = ident; t = parse_type_hint >] -> (name,false,t)
 
 and parse_function_field doc meta al = parser
-	| [< '(Kwd Function,p1); name = parse_fun_name; pl = parse_constraint_params; '(POpen,_); args = psep Comma parse_fun_param; '(PClose,_); t = popt parse_type_hint; s >] ->
+	| [< '(((Kwd Function)|(Const (Ident "fn"))),p1); name = parse_fun_name; pl = parse_constraint_params; '(POpen,_); args = psep Comma parse_fun_param; '(PClose,_); t = popt parse_type_hint; s >] ->
 		let e, p2 = (match s with parser
 			| [< e = expr; s >] ->
 				ignore(semicolon s);
@@ -1145,7 +1145,7 @@ and parse_block_elt = parser
 		(EVars vl,p)
 	| [< '(Kwd Inline,p1); s >] ->
 		begin match s with parser
-		| [< '(Kwd Function,_); e = parse_function p1 true; _ = semicolon >] -> e
+		| [< '(((Kwd Function)|(Const (Ident "fn"))),_); e = parse_function p1 true; _ = semicolon >] -> e
 		| [< e = secure_expr; _ = semicolon >] -> make_meta Meta.Inline [] e p1
 		| [< >] -> serror()
 		end
@@ -1259,8 +1259,8 @@ and parse_var_decl final = parser
 	| [< meta,name,final,t,pn = parse_var_decl_head final; v_decl = parse_var_assignment_resume final [] name pn t meta >] -> v_decl
 
 and inline_function = parser
-	| [< '(Kwd Inline,_); '(Kwd Function,p1) >] -> true, p1
-	| [< '(Kwd Function,p1) >] -> false, p1
+	| [< '(Kwd Inline,_); '(((Kwd Function)|(Const (Ident "fn"))),p1) >] -> true, p1
+	| [< '(((Kwd Function)|(Const (Ident "fn"))),p1) >] -> false, p1
 
 and parse_macro_expr p = parser
 	| [< '(DblDot,_); t = parse_complex_type >] ->
@@ -1420,7 +1420,7 @@ and expr = parser
 				syntax_error (Expected [")";",";":"]) s (expr_next (EParenthesis e, punion p1 (pos e)) s))
 		)
 	| [< '(BkOpen,p1); e = parse_array_decl p1; s >] -> expr_next e s
-	| [< '(Kwd Function,p1); e = parse_function p1 false; >] -> e
+	| [< '(((Kwd Function)|(Const (Ident "fn"))),p1); e = parse_function p1 false; >] -> e
 	| [< '(Unop op,p1); e = expr >] -> make_unop op e p1
 	| [< '(Spread,p1); e = expr >] -> make_unop Spread e (punion p1 (pos e))
 	| [< '(Binop OpSub,p1); e = expr >] ->
@@ -1609,7 +1609,7 @@ and parse_field e1 efk p s =
 		begin match s with parser
 		| [< '(Kwd Macro,p2) when p.pmax = p2.pmin; s >] -> expr_next (EField (e1,"macro",efk) , punion (pos e1) p2) s
 		| [< '(Kwd Extern,p2) when p.pmax = p2.pmin; s >] -> expr_next (EField (e1,"extern",efk) , punion (pos e1) p2) s
-		| [< '(Kwd Function,p2) when p.pmax = p2.pmin; s >] -> expr_next (EField (e1,"function",efk) , punion (pos e1) p2) s
+		| [< '(((Kwd Function)|(Const (Ident "fn"))),p2) when p.pmax = p2.pmin; s >] -> expr_next (EField (e1,"function",efk) , punion (pos e1) p2) s
 		| [< '(Kwd New,p2) when p.pmax = p2.pmin; s >] -> expr_next (EField (e1,"new",efk) , punion (pos e1) p2) s
 		| [< '(Kwd k,p2) when !parsing_macro_cond && p.pmax = p2.pmin; s >] -> expr_next (EField (e1,s_keyword k,efk) , punion (pos e1) p2) s
 		| [< '(Const (Ident f),p2) when p.pmax = p2.pmin; s >] -> expr_next (EField (e1,f,efk) , punion (pos e1) p2) s

@@ -21,6 +21,7 @@ open Globals
 
 type keyword =
 	| Function
+    | Fn
 	| Class
 	| Var
 	| If
@@ -496,6 +497,7 @@ let s_placed_access (a,_) = s_access a
 
 let s_keyword = function
 	| Function -> "function"
+    | Fn -> "function"
 	| Class -> "class"
 	| Static -> "static"
 	| Var -> "var"

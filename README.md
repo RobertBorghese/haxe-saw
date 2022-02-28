@@ -33,3 +33,28 @@ for i in arr {
     trace(i);
 }
 ```
+
+&nbsp;
+
+### `fn` Keyword
+
+Based on Rust's function keyword. Can be used as a replacement for `function` in almost all cases.
+
+```haxe
+fn test() {
+	trace("do thing");
+}
+
+fn main() {
+	// fn can still be used as variable name for compatibility
+	var fn = () -> {
+		trace("i am smol");
+	};
+
+	// as a result, it can't be used as a value.
+	// use lambdas for small function syntax instead
+	var fn2 = fn() { // invalid
+		trace("so am i");
+	}
+}
+```
