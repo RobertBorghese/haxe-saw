@@ -655,7 +655,12 @@ and parse_complex_type_maybe_named allow_named = parser
 		end
 	| [< s >] ->
 		let t = parse_complex_type_inner allow_named s in
-		parse_complex_type_next t s
+        let t2 = begin match s with parser
+            | [< '(Question,p2) >] ->
+                CTPath (mk_type_path ~params:[TPType t] ([],"Null")),display_position#with_pos p2
+            | [< >] -> t
+        end in
+		parse_complex_type_next t2 s
 
 and parse_structural_extension = parser
 	| [< '(Binop OpGt,p1); s >] ->
