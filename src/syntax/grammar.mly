@@ -1439,6 +1439,15 @@ and expr = parser
 				syntax_error (Expected [")"]) s (mk_null_expr (pos it))
 		in
 		(EFor (it,e),punion p (pos e))
+
+    | [< '(Kwd For,p); (* '(POpen,_); *) it = secure_expr; s >] ->
+        let e = match s with parser
+            | [< (* '(PClose,_); *) e = secure_expr >] -> e
+            | [< >] ->
+                syntax_error (Expected [")"]) s (mk_null_expr (pos it))
+        in
+        (EFor (it,e),punion p (pos e))
+
 	| [< '(Kwd If,p); '(POpen,_); cond = secure_expr; s >] ->
 		let e1 = match s with parser
 			| [< '(PClose,_); e1 = secure_expr >] -> e1
@@ -1463,6 +1472,32 @@ and expr = parser
 					None
 		) in
 		(EIf (cond,e1,e2), punion p (match e2 with None -> pos e1 | Some e -> pos e))
+    
+    | [< '(Kwd If,p); (* '(POpen,_); *) cond = secure_expr; s >] ->
+        let e1 = match s with parser
+            | [< (* '(PClose,_); *) e1 = secure_expr >] -> e1
+            | [< >] ->
+                syntax_error (Expected [")"]) s (mk_null_expr (pos cond))
+        in
+        let e2 = (match s with parser
+            | [< '(Kwd Else,_); e2 = secure_expr >] -> Some e2
+            | [< >] ->
+                (* We check this in two steps to avoid the lexer missing tokens (#8565). *)
+                match Stream.npeek 1 s with
+                | [(Semicolon,_)] ->
+                    begin match Stream.npeek 2 s with
+                    | [(Semicolon,_);(Kwd Else,_)] ->
+                        Stream.junk s;
+                        Stream.junk s;
+                        Some (secure_expr s)
+                    | _ ->
+                        None
+                    end
+                | _ ->
+                    None
+        ) in
+        (EIf (cond,e1,e2), punion p (match e2 with None -> pos e1 | Some e -> pos e))
+
 	| [< '(Kwd Return,p); s >] ->
 		begin match s with parser
 		| [< e = expr >] -> (EReturn (Some e),punion p (pos e))
@@ -1479,6 +1514,15 @@ and expr = parser
 				syntax_error (Expected [")"]) s (mk_null_expr (pos cond))
 		in
 		(EWhile (cond,e,NormalWhile),punion p1 (pos e))
+
+    | [< '(Kwd While,p1); (* '(POpen,_); *) cond = secure_expr; s >] ->
+        let e = match s with parser
+            | [< (* '(PClose,_); *) e = secure_expr >] -> e
+            | [< >] ->
+                syntax_error (Expected [")"]) s (mk_null_expr (pos cond))
+        in
+        (EWhile (cond,e,NormalWhile),punion p1 (pos e))
+
 	| [< '(Kwd Do,p1); e = secure_expr; s >] ->
 		begin match s with parser
 			| [< '(Kwd While,_); '(POpen,_); cond = secure_expr; s >] ->
