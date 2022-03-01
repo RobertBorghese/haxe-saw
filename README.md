@@ -92,6 +92,6 @@ fn main() {
 	// use lambdas for small function syntax instead
 	var fn2 = fn() { // invalid
 		trace("so am i");
-	}
+	};
 }
 ```
