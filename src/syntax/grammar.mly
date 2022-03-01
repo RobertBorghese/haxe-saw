@@ -63,14 +63,14 @@ let dollar_ident = parser
 	| [< '(Dollar i,p) >] -> ("$" ^ i),p
 
 let dollar_ident_macro pack = parser
-    | [< '(((Kwd Function)|(Const (Ident "fn"))),p) when pack <> [] >] -> "function", p
+	| [< '(((Kwd Function)|(Const (Ident "fn"))),p) when pack <> [] >] -> "function", p
 	| [< '(Const (Ident i),p) >] -> i,p
 	| [< '(Dollar i,p) >] -> ("$" ^ i),p
 	| [< '(Kwd Macro,p) when pack <> [] >] -> "macro", p
 	| [< '(Kwd Extern,p) when pack <> [] >] -> "extern", p
 
 let lower_ident_or_macro = parser
-    | [< '(((Kwd Function)|(Const (Ident "fn"))),_) >] -> "function"
+	| [< '(((Kwd Function)|(Const (Ident "fn"))),_) >] -> "function"
 	| [< '(Const (Ident i),p) when is_lower_ident i >] -> i
 	| [< '(Kwd Macro,_) >] -> "macro"
 	| [< '(Kwd Extern,_) >] -> "extern"
@@ -345,7 +345,7 @@ and parse_import' s p1 =
 			in
 			check_resume p resume (fun () -> ());
 			begin match s with parser
-            | [< '(((Kwd Function)|(Const (Ident "fn"))),p) >] ->
+			| [< '(((Kwd Function)|(Const (Ident "fn"))),p) >] ->
 				loop pn (("function",p) :: acc)
 			| [< '(Const (Ident k),p) >] ->
 				loop pn ((k,p) :: acc)
@@ -395,7 +395,7 @@ and parse_using' s p1 =
 		| [< '(Dot,p) >] ->
 			check_resume p (fun () -> type_path (List.map fst acc) false (punion pn p)) (fun () -> ());
 			begin match s with parser
-            | [< '(((Kwd Function)|(Const (Ident "fn"))),p) >] ->
+			| [< '(((Kwd Function)|(Const (Ident "fn"))),p) >] ->
 				loop pn (("function",p) :: acc)
 			| [< '(Const (Ident k),p) >] ->
 				loop pn ((k,p) :: acc)
@@ -655,11 +655,16 @@ and parse_complex_type_maybe_named allow_named = parser
 		end
 	| [< s >] ->
 		let t = parse_complex_type_inner allow_named s in
-        let t2 = begin match s with parser
-            | [< '(Question,p2) >] ->
-                CTPath (mk_type_path ~params:[TPType t] ([],"Null")),punion (pos t) p2
-            | [< >] -> t
-        end in
+		let rec loop s ty = match s with parser
+			| [< '(Question,op); s >] ->
+				let nt = (CTPath (mk_type_path ~params:[TPType ty] ([],"Null")),punion (pos ty) op) in
+				loop s nt
+			| [< '(BkOpen,_); '(BkClose,op); s >] ->
+				let nt = (CTPath (mk_type_path ~params:[TPType ty] ([],"Array")),punion (pos ty) op) in
+				loop s nt
+			| [< >] -> ty
+		in
+		let t2 = (loop s t) in
 		parse_complex_type_next t2 s
 
 and parse_structural_extension = parser
@@ -1440,13 +1445,13 @@ and expr = parser
 		in
 		(EFor (it,e),punion p (pos e))
 
-    | [< '(Kwd For,p); (* '(POpen,_); *) it = secure_expr; s >] ->
-        let e = match s with parser
-            | [< (* '(PClose,_); *) e = secure_expr >] -> e
-            | [< >] ->
-                syntax_error (Expected [")"]) s (mk_null_expr (pos it))
-        in
-        (EFor (it,e),punion p (pos e))
+	| [< '(Kwd For,p); (* '(POpen,_); *) it = secure_expr; s >] ->
+		let e = match s with parser
+			| [< (* '(PClose,_); *) e = secure_expr >] -> e
+			| [< >] ->
+				syntax_error (Expected [")"]) s (mk_null_expr (pos it))
+		in
+		(EFor (it,e),punion p (pos e))
 
 	| [< '(Kwd If,p); '(POpen,_); cond = secure_expr; s >] ->
 		let e1 = match s with parser
@@ -1472,31 +1477,31 @@ and expr = parser
 					None
 		) in
 		(EIf (cond,e1,e2), punion p (match e2 with None -> pos e1 | Some e -> pos e))
-    
-    | [< '(Kwd If,p); (* '(POpen,_); *) cond = secure_expr; s >] ->
-        let e1 = match s with parser
-            | [< (* '(PClose,_); *) e1 = secure_expr >] -> e1
-            | [< >] ->
-                syntax_error (Expected [")"]) s (mk_null_expr (pos cond))
-        in
-        let e2 = (match s with parser
-            | [< '(Kwd Else,_); e2 = secure_expr >] -> Some e2
-            | [< >] ->
-                (* We check this in two steps to avoid the lexer missing tokens (#8565). *)
-                match Stream.npeek 1 s with
-                | [(Semicolon,_)] ->
-                    begin match Stream.npeek 2 s with
-                    | [(Semicolon,_);(Kwd Else,_)] ->
-                        Stream.junk s;
-                        Stream.junk s;
-                        Some (secure_expr s)
-                    | _ ->
-                        None
-                    end
-                | _ ->
-                    None
-        ) in
-        (EIf (cond,e1,e2), punion p (match e2 with None -> pos e1 | Some e -> pos e))
+	
+	| [< '(Kwd If,p); (* '(POpen,_); *) cond = secure_expr; s >] ->
+		let e1 = match s with parser
+			| [< (* '(PClose,_); *) e1 = secure_expr >] -> e1
+			| [< >] ->
+				syntax_error (Expected [")"]) s (mk_null_expr (pos cond))
+		in
+		let e2 = (match s with parser
+			| [< '(Kwd Else,_); e2 = secure_expr >] -> Some e2
+			| [< >] ->
+				(* We check this in two steps to avoid the lexer missing tokens (#8565). *)
+				match Stream.npeek 1 s with
+				| [(Semicolon,_)] ->
+					begin match Stream.npeek 2 s with
+					| [(Semicolon,_);(Kwd Else,_)] ->
+						Stream.junk s;
+						Stream.junk s;
+						Some (secure_expr s)
+					| _ ->
+						None
+					end
+				| _ ->
+					None
+		) in
+		(EIf (cond,e1,e2), punion p (match e2 with None -> pos e1 | Some e -> pos e))
 
 	| [< '(Kwd Return,p); s >] ->
 		begin match s with parser
@@ -1515,13 +1520,13 @@ and expr = parser
 		in
 		(EWhile (cond,e,NormalWhile),punion p1 (pos e))
 
-    | [< '(Kwd While,p1); (* '(POpen,_); *) cond = secure_expr; s >] ->
-        let e = match s with parser
-            | [< (* '(PClose,_); *) e = secure_expr >] -> e
-            | [< >] ->
-                syntax_error (Expected [")"]) s (mk_null_expr (pos cond))
-        in
-        (EWhile (cond,e,NormalWhile),punion p1 (pos e))
+	| [< '(Kwd While,p1); (* '(POpen,_); *) cond = secure_expr; s >] ->
+		let e = match s with parser
+			| [< (* '(PClose,_); *) e = secure_expr >] -> e
+			| [< >] ->
+				syntax_error (Expected [")"]) s (mk_null_expr (pos cond))
+		in
+		(EWhile (cond,e,NormalWhile),punion p1 (pos e))
 
 	| [< '(Kwd Do,p1); e = secure_expr; s >] ->
 		begin match s with parser
