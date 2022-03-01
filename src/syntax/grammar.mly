@@ -657,7 +657,7 @@ and parse_complex_type_maybe_named allow_named = parser
 		let t = parse_complex_type_inner allow_named s in
         let t2 = begin match s with parser
             | [< '(Question,p2) >] ->
-                CTPath (mk_type_path ~params:[TPType t] ([],"Null")),display_position#with_pos p2
+                CTPath (mk_type_path ~params:[TPType t] ([],"Null")),punion (pos t) p2
             | [< >] -> t
         end in
 		parse_complex_type_next t2 s
@@ -1420,7 +1420,7 @@ and expr = parser
 				syntax_error (Expected [")";",";":"]) s (expr_next (EParenthesis e, punion p1 (pos e)) s))
 		)
 	| [< '(BkOpen,p1); e = parse_array_decl p1; s >] -> expr_next e s
-	| [< '(((Kwd Function)|(Const (Ident "fn"))),p1); e = parse_function p1 false; >] -> e
+	| [< '(Kwd Function,p1); e = parse_function p1 false; >] -> e
 	| [< '(Unop op,p1); e = expr >] -> make_unop op e p1
 	| [< '(Spread,p1); e = expr >] -> make_unop Spread e (punion p1 (pos e))
 	| [< '(Binop OpSub,p1); e = expr >] ->
