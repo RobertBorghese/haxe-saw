@@ -5,15 +5,21 @@ In all seriousness, this is a fork of Haxe created primarily for personal use. T
 
 Also, please note I have no experience in OCaml outside of modifying the Haxe compiler, so there are no guarentees I know what the hell I'm doing... just in case you actually look at the source code.
 
-To learn more about Haxe, visit:
-
-[Official Haxe Github](https://github.com/HaxeFoundation/haxe)
-
-[Official Haxe Website](https://haxe.org/)
-
+To learn more about Haxe, visit:\
+[Official Haxe Github](https://github.com/HaxeFoundation/haxe)\
+[Official Haxe Website](https://haxe.org/)\
 [Official Haxe Download](https://haxe.org/download/)
 
 ---
+
+# [Installation]
+
+1) Download like you would with any version of Haxe from Releases or build it yourself.
+2) Add it to PC PATH if necessary.
+3) And/or if you're using Visual Studio Code add `"haxe.executable"` to your `settings.json` with the location HaxeSAW haxe.exe as the value.
+
+---
+# [Features]
 
 ### Shorthand Nullable Types
 
