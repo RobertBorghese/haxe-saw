@@ -39,14 +39,14 @@ Based on Java's array type syntax, adding `[]` to the end of a type is the equav
 
 ```haxe
 @:nullSafety(Strict) {
-	// Array<Int>
+    // Array<Int>
     var optA: Int[] = [1, 2, 3, 5, 8, 13];
 
-	// Array<Null<Int>>
-	var optB: Int?[] = [123, null, null, 321, null];
+    // Array<Null<Int>>
+    var optB: Int?[] = [123, null, null, 321, null];
 
-	// Null<Array<Int>>
-	var optC: Int[]? = null;
+    // Null<Array<Int>>
+    var optC: Int[]? = null;
 }
 ```
 
