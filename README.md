@@ -29,11 +29,11 @@ Syntax sugar for aliasing an expression's resulting value or the value's fields 
 var point = new Point(10, 20);
 
 with p as point {
-	trace(p.x, p.y); // 10, 20
+    trace(p.x, p.y); // 10, 20
 }
 
 with x, y from point {
-	trace(x, y); // 10, 20
+    trace(x, y); // 10, 20
 }
 ```
 
