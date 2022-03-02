@@ -1365,22 +1365,67 @@ and expr = parser
 		| [< e = parse_macro_expr p >] -> e
 		| [< >] -> serror()
 		end
+
+
+	(* start of "with" *)
 	| [< '(Const (Ident "with"),pw); s >] ->
 		(match s with parser
-			| [< '(Const (Ident i1), p); s >] -> 
+			| [< '(Const (Ident i1), i1p); s >] -> 
 				(match s with parser
 					| [< '(Const (Ident "as"),p2); e = expr; e2 = expr >] -> 
 						(let vardelc = (EVars([{
-							ev_name = (i1,p);
+							ev_name = (i1,i1p);
 							ev_final = true;
 							ev_static = false;
 							ev_type = None;
 							ev_expr = Some e;
 							ev_meta = [];
-						}]),p) in
+						}]),i1p) in
 						(EBlock([vardelc;e2]),(punion pw (pos e2))))
+					| [< '(Comma,pc); s >] ->
+						(
+							let tovar name p = (EVars([{
+								ev_name = (name,p);
+								ev_final = true;
+								ev_static = false;
+								ev_type = None;
+								ev_expr = Some (EField((EConst (Ident "temp"),null_pos), name, EFNormal),p);
+								ev_meta = [];
+							}]),p)
+							in
+							let rec loop names = (match s with parser
+								| [< '(Const (Ident "from"),p) >] -> names
+								| [< '(Const (Ident ii),p) >] -> (
+									let newnames = ([(tovar ii p)] @ names) in
+									match s with parser
+										| [< '(Comma,_) >] -> (loop newnames)
+										| [< '(Const (Ident "from"),_) >] -> (newnames)
+										| [< s >] -> [syntax_error (Expected [",";"from"]) s (EBlock([]),next_pos s)]
+								)
+								| [< s >] -> [syntax_error (Expected ["identifier";"from"]) s (EBlock([]),next_pos s)]
+							)
+							in
+							let vars = loop [(tovar i1 i1p)] in
+							(match s with parser
+								| [< e = expr; e2 = expr >] ->
+									let tempvar = (EVars([{
+										ev_name = ("temp",pos e);
+										ev_final = true;
+										ev_static = false;
+										ev_type = None;
+										ev_expr = Some e;
+										ev_meta = [];
+									}]),pos e)
+									in
+									(* Printer.s_expr e *)
+									EBlock([tempvar] @ vars @ [e2]),punion pw (pos e2)
+								| [< >] -> (syntax_error (Expected ["expression"]) s (EBlock([]),pos (next_token s))))
+						)
 					| [< s >] -> (syntax_error (Expected ["as"]) s (EBlock([]),pos (next_token s))))
 			| [< >] -> (expr_next (EConst (Ident "with"),pw) s))
+	(* end of "with" *)
+	
+
 	| [< '(Kwd Var,p1); v = parse_var_decl false >] -> (EVars [v],p1)
 	| [< '(Kwd Final,p1); v = parse_var_decl true >] -> (EVars [v],p1)
 	| [< '(Const c,p); s >] -> expr_next (EConst c,p) s

@@ -21,6 +21,36 @@ To learn more about Haxe, visit:\
 ---
 # [Features]
 
+### `with` Keyword
+
+Syntax sugar for aliasing an expression's resulting value or the value's fields to a new scope.
+
+```haxe
+var point = new Point(10, 20);
+
+with p as point {
+	trace(p.x, p.y); // 10, 20
+}
+
+with x, y from point {
+	trace(x, y); // 10, 20
+}
+```
+
+&nbsp;
+
+### `as` Operator
+
+Based on C#'s `as` operator. Converts an expression like this: `var as Type` to `case(var, Type)`.
+
+```haxe
+var float: Float = 35.0;
+var int = float as Int;
+```
+
+&nbsp;
+
+
 ### Shorthand Nullable Types
 
 Based on Kotlin's nullable type syntax, adding a `?` to the end of a type is the equavalent of surronding with `Null<...>`.
