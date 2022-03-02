@@ -1623,6 +1623,10 @@ and expr_next' e1 = parser
 		let p2 = pos t in
 		let e_is = EIs (e1,t), (punion p1 p2) in
 		expr_next e_is s
+	| [< '(Const (Ident "as"),p_as); t = parse_complex_type >] ->
+		let p1 = pos e1 in
+		let p2 = pos t in
+		ECast(e1, (Some t)),punion p1 p2
 	| [< >] -> e1
 
 and parse_field e1 efk p s =
