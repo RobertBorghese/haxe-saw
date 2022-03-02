@@ -1365,6 +1365,22 @@ and expr = parser
 		| [< e = parse_macro_expr p >] -> e
 		| [< >] -> serror()
 		end
+	| [< '(Const (Ident "with"),pw); s >] ->
+		(match s with parser
+			| [< '(Const (Ident i1), p); s >] -> 
+				(match s with parser
+					| [< '(Const (Ident "as"),p2); e = expr; e2 = expr >] -> 
+						(let vardelc = (EVars([{
+							ev_name = (i1,p);
+							ev_final = true;
+							ev_static = false;
+							ev_type = None;
+							ev_expr = Some e;
+							ev_meta = [];
+						}]),p) in
+						(EBlock([vardelc;e2]),(punion pw (pos e2))))
+					| [< s >] -> (syntax_error (Expected ["as"]) s (EBlock([]),pos (next_token s))))
+			| [< >] -> (expr_next (EConst (Ident "with"),pw) s))
 	| [< '(Kwd Var,p1); v = parse_var_decl false >] -> (EVars [v],p1)
 	| [< '(Kwd Final,p1); v = parse_var_decl true >] -> (EVars [v],p1)
 	| [< '(Const c,p); s >] -> expr_next (EConst c,p) s
