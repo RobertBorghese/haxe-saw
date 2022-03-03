@@ -45,8 +45,8 @@ Based on [C#'s object initializers](https://docs.microsoft.com/en-us/dotnet/csha
 
 ```haxe
 var c = new Color() {
-	name = "blue";
-	alpha = 0.5;
+    name = "blue";
+    alpha = 0.5;
 }
 
 trace(c.name == 20, c.alpha == "abc"); // true, true
