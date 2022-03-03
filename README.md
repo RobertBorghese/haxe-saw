@@ -41,22 +41,15 @@ with x, y from point {
 
 ### Object Initializers
 
-Based on [C#'s object initializers](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers), this feature allows for a simple syntax to initialize multiple properties upon an object's creation.
+Based on [C#'s object initializers](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers), this feature allows for a simple syntax to initialize multiple fields upon an object's creation.
 
 ```haxe
-class MyClass {
-	public var num = 0;
-	public var str = "";
-
-	public function new() {}
+var c = new Color() {
+	name = "blue";
+	alpha = 0.5;
 }
 
-var obj = new MyClass() {
-	num = 10 + 10;
-	str = "abc";
-}
-
-trace(obj.num == 20, obj.str == "abc"); // true, true
+trace(c.name == 20, c.alpha == "abc"); // true, true
 ```
 
 &nbsp;
@@ -135,13 +128,13 @@ fn test() {
 }
 
 fn main() {
-	// fn can still be used as variable name for compatibility
+	// "fn" can still be used as variable name for compatibility...
 	var fn = () -> {
 		trace("i am smol");
 	};
 
-	// as a result, it can't be used as a value.
-	// use lambdas for small function syntax instead
+	// ...as a result, it can't be used to create functions in expressions.
+	// Use lambdas instead.
 	var fn2 = fn() { // invalid
 		trace("so am i");
 	};
