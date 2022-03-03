@@ -39,9 +39,31 @@ with x, y from point {
 
 &nbsp;
 
+### Object Initializers
+
+Based on [C#'s object initializers](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers), this feature allows for a simple syntax to initialize multiple properties upon an object's creation.
+
+```haxe
+class MyClass {
+	public var num = 0;
+	public var str = "";
+
+	public function new() {}
+}
+
+var obj = new MyClass() {
+	num = 10 + 10;
+	str = "abc";
+}
+
+trace(obj.num == 20, obj.str == "abc"); // true, true
+```
+
+&nbsp;
+
 ### `as` Operator
 
-Based on C#'s `as` operator. Converts an expression like this: `var as Type` to `case(var, Type)`.
+Based on [C#'s `as` operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/type-testing-and-cast#as-operator). Converts an expression like this: `var as Type` to `case(var, Type)`.
 
 ```haxe
 var float: Float = 35.0;
@@ -53,7 +75,7 @@ var int = float as Int;
 
 ### Shorthand Nullable Types
 
-Based on Kotlin's nullable type syntax, adding a `?` to the end of a type is the equavalent of surronding with `Null<...>`.
+Based on [Kotlin's nullable type syntax](https://kotlinlang.org/docs/null-safety.html#nullable-types-and-non-null-types), adding a `?` to the end of a type is the equavalent of surronding with `Null<...>`.
 
 ```haxe
 @:nullSafety(Strict) {
@@ -65,7 +87,7 @@ Based on Kotlin's nullable type syntax, adding a `?` to the end of a type is the
 
 ### Shorthand Array Types
 
-Based on Java's array type syntax, adding `[]` to the end of a type is the equavalent of surronding with `Array<...>`.
+Based on [Java's array type syntax](https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html), adding `[]` to the end of a type is the equavalent of surronding with `Array<...>`.
 
 ```haxe
 @:nullSafety(Strict) {
@@ -105,7 +127,7 @@ for i in arr {
 
 ### `fn` Keyword
 
-Based on Rust's function keyword. Can be used as a replacement for `function` in almost all cases.
+Based on [Rust's function keyword](https://doc.rust-lang.org/book/ch03-03-how-functions-work.html). Can be used as a replacement for `function` in almost all cases.
 
 ```haxe
 fn test() {
