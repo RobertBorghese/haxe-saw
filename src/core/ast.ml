@@ -64,6 +64,7 @@ type keyword =
 	| Abstract
 	| Macro
 	| Final
+	| Const
 	| Operator
 	| Overload
 
@@ -540,6 +541,7 @@ let s_keyword = function
 	| Abstract -> "abstract"
 	| Macro -> "macro"
 	| Final -> "final"
+	| Const -> "const"
 	| Operator -> "operator"
 	| Overload -> "overload"
 

@@ -118,6 +118,17 @@ for i in arr {
 
 &nbsp;
 
+### `const` Keyword
+
+Based on [JavaScript's constant variable keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const). It works exactly like Haxe's `final` keyword.
+
+```js
+const str = "Hello";
+str = "Goodbye"; // error: Cannot assign to final
+```
+
+&nbsp;
+
 ### `fn` Keyword
 
 Based on [Rust's function keyword](https://doc.rust-lang.org/book/ch03-03-how-functions-work.html). Can be used as a replacement for `function` in almost all cases.

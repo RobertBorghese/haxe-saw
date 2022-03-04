@@ -86,7 +86,7 @@ let error e pos =
 let keywords =
 	let h = Hashtbl.create 3 in
 	List.iter (fun k -> Hashtbl.add h (s_keyword k) k)
-		[Function;Fn;Class;Static;Var;If;Else;While;Do;For;
+		[Function;Fn;Class;Static;Var;Const;If;Else;While;Do;For;
 		Break;Return;Continue;Extends;Implements;Import;
 		Switch;Case;Default;Public;Private;Try;Untyped;
 		Catch;New;This;Throw;Extern;Enum;In;Interface;
@@ -486,6 +486,7 @@ let rec token lexbuf =
 	| "inline" -> mk_keyword lexbuf Inline
 	| "macro" -> mk_keyword lexbuf Macro
 	| "final" -> mk_keyword lexbuf Final
+	| "const" -> mk_keyword lexbuf Const
 	| "operator" -> mk_keyword lexbuf Operator
 	| "overload" -> mk_keyword lexbuf Overload
 	(* fields *)
