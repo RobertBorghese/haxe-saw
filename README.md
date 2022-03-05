@@ -14,14 +14,16 @@ To learn more about Haxe, visit:\
 
 # [Installation]
 
-1) Download like you would with any version of Haxe from Releases or build it yourself.
-2) Add it to PC PATH if necessary.
-3) And/or if you're using Visual Studio Code add `"haxe.executable"` to your `settings.json` with the location HaxeSAW haxe.exe as the value.
+1) Download like you would with any version of Haxe from [Releases](https://github.com/RobertBorghese/haxe-saw/releases) or build it yourself.
+2) Add it to your PC's "PATH" if necessary.
+3) And/or if you're using Visual Studio Code add `"haxe.executable"` to your `settings.json` with the location of Haxe-SAW's `haxe.exe` as the value.
 
 ---
 # [Features]
 
-### `with` Keyword
+&nbsp;
+
+# `with` Keyword
 
 Syntax sugar for aliasing an expression's resulting value or the value's fields to a new scope.
 
@@ -39,7 +41,7 @@ with x, y from point {
 
 &nbsp;
 
-### Trailing Block Arguments
+# Trailing Block Arguments
 
 [Kotlin's trailing lambdas](https://kotlinlang.org/docs/lambdas.html#passing-trailing-lambdas) provide users with the ability to use a nice syntax for passing a lambda as the final argument to a function. This feature works similarily, but instead of passing lambda functions, it passes a block scope (which executes and passes the final value at call-time). This works well with macro functions that can take the block scope as an `Expr` and modify it.
 
@@ -64,7 +66,7 @@ var meters = player.getDistance().with(dist) {
 
 &nbsp;
 
-### Object Initializers
+# Object Initializers
 
 Based on [C#'s object initializers](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers), this feature allows for a simple syntax to initialize multiple fields upon an object's creation.
 
@@ -79,7 +81,7 @@ trace(c.name == "blue", c.alpha == 0.5); // true, true
 
 &nbsp;
 
-### `as` Operator
+# `as` Operator
 
 Based on [C#'s `as` operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/type-testing-and-cast#as-operator). Converts an expression like this: `var as Type` to `case(var, Type)`.
 
@@ -91,7 +93,7 @@ var int = float as Int;
 &nbsp;
 
 
-### Shorthand Nullable Types
+# Shorthand Nullable Types
 
 Based on [Kotlin's nullable type syntax](https://kotlinlang.org/docs/null-safety.html#nullable-types-and-non-null-types), adding a `?` to the end of a type is the equavalent of surronding with `Null<...>`.
 
@@ -103,7 +105,7 @@ Based on [Kotlin's nullable type syntax](https://kotlinlang.org/docs/null-safety
 
 &nbsp;
 
-### Shorthand Array Types
+# Shorthand Array Types
 
 Based on [Java's array type syntax](https://docs.oracle.com/javase/specs/jls/se7/html/jls-10.html), adding `[]` to the end of a type is the equavalent of surronding with `Array<...>`.
 
@@ -122,7 +124,7 @@ Based on [Java's array type syntax](https://docs.oracle.com/javase/specs/jls/se7
 
 &nbsp;
 
-### `if`/`while`/`for` No Parentheses
+# `if`/`while`/`for` No Parentheses
 
 Based on Rust's and Swift's conditional/flow control, the parentheses surronding the inputs for flow control statements can be omitted.
 
@@ -143,7 +145,7 @@ for i in arr {
 
 &nbsp;
 
-### `const` Keyword
+# `const` Keyword
 
 Based on [JavaScript's constant variable keyword](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const). It works exactly like Haxe's `final` keyword.
 
@@ -154,7 +156,7 @@ str = "Goodbye"; // error: Cannot assign to final
 
 &nbsp;
 
-### `fn` Keyword
+# `fn` Keyword
 
 Based on [Rust's function keyword](https://doc.rust-lang.org/book/ch03-03-how-functions-work.html). Can be used as a replacement for `function` in almost all cases.
 
