@@ -147,6 +147,7 @@ let in_macro = ref false
 let had_resume = ref false
 let code_ref = ref (Sedlexing.Utf8.from_string "")
 let delayed_syntax_completion : (syntax_completion * DisplayTypes.completion_subject) option ref = ref None
+let expecting_expr_next = ref false
 
 let reset_state () =
 	in_display := false;
@@ -156,7 +157,11 @@ let reset_state () =
 	in_macro := false;
 	had_resume := false;
 	code_ref := Sedlexing.Utf8.from_string "";
-	delayed_syntax_completion := None
+	delayed_syntax_completion := None;
+	expecting_expr_next := false
+
+let toggle_expecting_expr_next b =
+	expecting_expr_next := b
 
 (* Per-file state *)
 

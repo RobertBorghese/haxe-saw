@@ -39,6 +39,31 @@ with x, y from point {
 
 &nbsp;
 
+### Trailing Block Arguments
+
+[Kotlin's trailing lambdas](https://kotlinlang.org/docs/lambdas.html#passing-trailing-lambdas) provide users with the ability to use a nice syntax for passing a lambda as the final argument to a function. This feature works similarily, but instead of passing lambda functions, it passes a block scope (which executes and passes the final value at call-time). This works well with macro functions that can take the block scope as an `Expr` and modify it.
+
+```haxe
+// https://github.com/RobertBorghese/Haxe-ExtraFeatures/
+using ExtraFeatures;
+
+...
+
+var player = new Player();
+
+Math.floor(player.x / 100.0).with {
+    trace(it);
+}
+
+var meters = player.getDistance().with(dist) {
+    recordDistance(dist);
+    triggerEffect().onlyif(dist > 1000);
+    convertDistanceToMeters(dist); // convert to meters and return
+}
+```
+
+&nbsp;
+
 ### Object Initializers
 
 Based on [C#'s object initializers](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/object-and-collection-initializers), this feature allows for a simple syntax to initialize multiple fields upon an object's creation.
@@ -49,7 +74,7 @@ var c = new Color() {
     alpha = 0.5;
 }
 
-trace(c.name == 20, c.alpha == "abc"); // true, true
+trace(c.name == "blue", c.alpha == 0.5); // true, true
 ```
 
 &nbsp;

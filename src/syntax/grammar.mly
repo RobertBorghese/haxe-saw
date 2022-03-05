@@ -1330,7 +1330,7 @@ and arrow_first_param e s =
 	| _ ->
 		serror())
 
-and expr ?(expect_post_expr = false) = parser
+and expr = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->
 		begin try
 			make_meta name params (secure_expr s) p
@@ -1372,7 +1372,7 @@ and expr ?(expect_post_expr = false) = parser
 		(match s with parser
 			| [< '(Const (Ident i1), i1p); s >] -> 
 				(match s with parser
-					| [< '(Const (Ident "as"),p2); e = secure_expr; e2 = secure_expr >] -> 
+					| [< '(Const (Ident "as"),p2); e = secure_expr_expect_next; e2 = secure_expr >] -> 
 						(let vardelc = (EVars([{
 							ev_name = (i1,i1p);
 							ev_final = true;
@@ -1407,7 +1407,7 @@ and expr ?(expect_post_expr = false) = parser
 							in
 							let vars = loop [(tovar i1 i1p)] in
 							(match s with parser
-								| [< e = secure_expr; e2 = secure_expr >] ->
+								| [< e = secure_expr_expect_next; e2 = secure_expr >] ->
 									let tempvar = (EVars([{
 										ev_name = ("temp",pos e);
 										ev_final = true;
@@ -1455,7 +1455,7 @@ and expr ?(expect_post_expr = false) = parser
 		begin match s with parser
 		| [< '(POpen,po); e = parse_call_params (fun el p2 -> (ENew(t,el)),punion p1 p2) po; s >] ->
 			(match (Stream.peek s) with
-				| Some (BrOpen,_) when not expect_post_expr ->
+				| Some (BrOpen,_) when not !expecting_expr_next ->
 					(
 					let ex = (expr s) in
 					let verifyexpr teste = (match teste with
@@ -1539,7 +1539,7 @@ and expr ?(expect_post_expr = false) = parser
 		in
 		(EFor (it,e),punion p (pos e))
 
-	| [< '(Kwd For,p); (* '(POpen,_); *) it = (secure_expr ~expect_post_expr:true); s >] ->
+	| [< '(Kwd For,p); (* '(POpen,_); *) it = secure_expr_expect_next; s >] ->
 		let e = match s with parser
 			| [< (* '(PClose,_); *) e = secure_expr >] -> e
 			| [< >] ->
@@ -1572,7 +1572,7 @@ and expr ?(expect_post_expr = false) = parser
 		) in
 		(EIf (cond,e1,e2), punion p (match e2 with None -> pos e1 | Some e -> pos e))
 	
-	| [< '(Kwd If,p); (* '(POpen,_); *) cond = secure_expr ~expect_post_expr:true; s >] ->
+	| [< '(Kwd If,p); (* '(POpen,_); *) cond = secure_expr_expect_next; s >] ->
 		let e1 = match s with parser
 			| [< (* '(PClose,_); *) e1 = secure_expr >] -> e1
 			| [< >] ->
@@ -1614,7 +1614,7 @@ and expr ?(expect_post_expr = false) = parser
 		in
 		(EWhile (cond,e,NormalWhile),punion p1 (pos e))
 
-	| [< '(Kwd While,p1); (* '(POpen,_); *) cond = secure_expr ~expect_post_expr:true; s >] ->
+	| [< '(Kwd While,p1); (* '(POpen,_); *) cond = secure_expr_expect_next; s >] ->
 		let e = match s with parser
 			| [< (* '(PClose,_); *) e = secure_expr >] -> e
 			| [< >] ->
@@ -1630,7 +1630,7 @@ and expr ?(expect_post_expr = false) = parser
 			| [< >] ->
 				syntax_error (Expected ["while"]) s e (* ignore do *)
 		end
-	| [< '(Kwd Switch,p1); e = secure_expr ~expect_post_expr:true; s >] ->
+	| [< '(Kwd Switch,p1); e = secure_expr_expect_next; s >] ->
 		begin match s with parser
 			| [< '(BrOpen,_); cases , def = parse_switch_cases e [] >] ->
 				let p2 = match s with parser
@@ -1705,7 +1705,15 @@ and expr_next' e1 = parser
 		let p1 = pos e1 in
 		let p2 = pos t in
 		ECast(e1, (Some t)),punion p1 p2
-	| [< >] -> e1
+	| [< s >] -> (match Stream.peek s with
+			| Some (BrOpen,_) when (not !expecting_expr_next) ->
+				(let ex = expr s in
+				match e1 with
+					| ECall(ecall, elist),p -> (ECall(ecall, elist @ [ex]),p)
+					| _,p -> (ECall(e1, [ex]),p)
+				)
+			| _ -> e1
+		)
 
 and parse_field e1 efk p s =
 	check_resume p (fun () -> (EDisplay (e1,DKDot),p)) (fun () ->
@@ -1810,11 +1818,18 @@ and parse_call_params f p1 s =
 		| [< >] -> parse_next_param [] p1
 	end
 
+and secure_expr_expect_next = parser
+	| [< s >] ->
+		(Parser.toggle_expecting_expr_next true;
+		let e = secure_expr s in
+		Parser.toggle_expecting_expr_next false;
+		e)
+
 (* Tries to parse a toplevel expression and defaults to a null expression when in display mode.
    This function always accepts in display mode and should only be used for expected expressions,
    not accepted ones! *)
-and secure_expr ?(expect_post_expr = false) = parser
-	| [< e = expr ~expect_post_expr:expect_post_expr >] -> e
+and secure_expr = parser
+	| [< e = expr >] -> e
 	| [< s >] ->
 		syntax_error (Expected ["expression"]) s (
 			let last = last_token s in
