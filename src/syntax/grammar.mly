@@ -1709,8 +1709,8 @@ and expr_next' e1 = parser
 			| Some (BrOpen,_) when (not !expecting_expr_next) ->
 				(let ex = expr s in
 				match e1 with
-					| ECall(ecall, elist),p -> (ECall(ecall, elist @ [ex]),p)
-					| _,p -> (ECall(e1, [ex]),p)
+					| ECall(ecall, elist),p -> expr_next (ECall(ecall, elist @ [ex]),p) s
+					| _,p -> expr_next (ECall(e1, [ex]),p) s
 				)
 			| _ -> e1
 		)
