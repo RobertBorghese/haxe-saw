@@ -83,7 +83,7 @@ trace(c.name == "blue", c.alpha == 0.5); // true, true
 
 # `as` Operator
 
-Based on [C#'s `as` operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/type-testing-and-cast#as-operator). Converts an expression like this: `var as Type` to `case(var, Type)`.
+Based on [C#'s `as` operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/type-testing-and-cast#as-operator). Converts an expression like this: `var as Type` to `cast(var, Type)`.
 
 ```haxe
 var float: Float = 35.0;
