@@ -49,7 +49,7 @@ with x, y from point {
 // https://github.com/RobertBorghese/Haxe-ExtraFeatures/
 using ExtraFeatures;
 
-...
+// ---
 
 var player = new Player();
 
@@ -99,10 +99,10 @@ Based on [Ruby's `unless`](https://docs.ruby-lang.org/en/3.1/doc/syntax/control_
 ```haxe
 const number = 123;
 
-unless(number == 0) {
-	trace("This will print.");
-} else if(number == 123) {
-	trace("This will not print.");
+unless number == 0 {
+    trace("This will print.");
+} else if number == 123 {
+    trace("This will not print.");
 }
 ```
 
