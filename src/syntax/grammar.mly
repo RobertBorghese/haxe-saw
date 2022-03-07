@@ -1169,7 +1169,22 @@ and parse_block_elt = parser
 			| [< >] -> ()
 		end;
 		e
-	| [< e = expr; _ = semicolon >] -> e
+	| [< e = expr; s >] ->
+		(match e with
+			| (EBlock(_)|EFor(_,_)|EIf(_,_,_)|EWhile(_,_,_)|ESwitch(_,_,_)|ETry(_,_)|EFunction(_,_)),_ ->
+				(match s with parser | [< _ = semicolon >] -> e)
+			| _,_ ->
+				(if fst (last_token s) <> BrClose then
+					(match s with parser
+						| [< '(Kwd If,p); e2 = expr; _ = semicolon >] -> (EIf(e2, e, None),(punion (pos e) (pos e2)))
+						| [< '(Const (Ident "unless"),p); e2 = expr; _ = semicolon >] -> (EIf((EUnop(Not, Prefix, e2),(pos e2)), e, None),(punion (pos e) (pos e2)))
+						| [< _ = semicolon >] -> e
+						| [< >] -> syntax_error (Expected [";"]) s (mk_null_expr (pos e))
+					)
+				else
+					(match s with parser | [< _ = semicolon >] -> e)
+				)
+		)
 
 and parse_obj_decl name e p0 s =
 	let make_obj_decl el p1 =
@@ -1425,6 +1440,32 @@ and expr = parser
 			| [< >] -> (expr_next (EConst (Ident "with"),pw) s))
 	(* end of "with" *)
 	
+	| [< '(Const (Ident "unless"),p); s >] ->
+		let expressions = match s with parser
+			| [< '(POpen,_); e0 = secure_expr >] ->
+				(match s with parser
+					| [< '(PClose,_); e1 = secure_expr >] -> e0,e1
+					| [< >] -> e0,(syntax_error (Expected [")"]) s (mk_null_expr (pos e0))))
+			| [< e0 = secure_expr; e1 = secure_expr >] -> e0,e1
+		in
+		let e2 = (match s with parser
+			| [< '(Kwd Else,_); e2 = secure_expr >] -> Some e2
+			| [< >] ->
+				(* We check this in two steps to avoid the lexer missing tokens (#8565). *)
+				match Stream.npeek 1 s with
+				| [(Semicolon,_)] ->
+					begin match Stream.npeek 2 s with
+					| [(Semicolon,_);(Kwd Else,_)] ->
+						Stream.junk s;
+						Stream.junk s;
+						Some (secure_expr s)
+					| _ ->
+						None
+					end
+				| _ ->
+					None
+		) in
+		(EIf ((EUnop(Not, Prefix, fst expressions),(pos (fst expressions))),snd expressions,e2), punion p (match e2 with None -> pos (snd expressions) | Some e -> pos e))
 
 	| [< '(Kwd Var,p1); v = parse_var_decl false >] -> (EVars [v],p1)
 	| [< '(Kwd (Final|Const),p1); v = parse_var_decl true >] -> (EVars [v],p1)

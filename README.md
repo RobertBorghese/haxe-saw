@@ -59,7 +59,7 @@ Math.floor(player.x / 100.0).with {
 
 var meters = player.getDistance().with(dist) {
     recordDistance(dist);
-    triggerEffect().onlyif(dist > 1000);
+    triggerEffect() if dist > 1000;
     convertDistanceToMeters(dist); // convert to meters and return
 }
 ```
@@ -92,6 +92,38 @@ var int = float as Int;
 
 &nbsp;
 
+# `unless` Expression
+
+Based on [Ruby's `unless`](https://docs.ruby-lang.org/en/3.1/doc/syntax/control_expressions_rdoc.html#label-unless+Expression), this keyword can be used just like `if`, but the provided expression must be false to execute the block.
+
+```haxe
+const number = 123;
+
+unless(number == 0) {
+	trace("This will print.");
+} else if(number == 123) {
+	trace("This will not print.");
+}
+```
+
+&nbsp;
+
+# Modifier `if` and `unless`
+
+Based on [Ruby's modifier conditions](https://docs.ruby-lang.org/en/3.1/doc/syntax/control_expressions_rdoc.html#label-Modifier+if+and+unless), conditions can be appended to any expression that doesn't end with a `}`. This is the equivalent of wrapping the expression with an `if` or `unless` condition.
+
+```haxe
+for(i in 0...inputNumber) {
+	break if i > 10;
+	continue if i % 2 == 1;
+	evenNumbers.push(i);
+}
+
+player.update() if player.canUpdate();
+player.draw() unless player.invisible();
+```
+
+&nbsp;
 
 # Shorthand Nullable Types
 
