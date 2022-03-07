@@ -114,9 +114,9 @@ Based on [Ruby's modifier conditions](https://docs.ruby-lang.org/en/3.1/doc/synt
 
 ```haxe
 for(i in 0...inputNumber) {
-	break if i > 10;
-	continue if i % 2 == 1;
-	evenNumbers.push(i);
+    break if i > 10;
+    continue if i % 2 == 1;
+    evenNumbers.push(i);
 }
 
 player.update() if player.canUpdate();
