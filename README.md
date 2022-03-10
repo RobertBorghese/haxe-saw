@@ -81,6 +81,30 @@ trace(c.name == "blue", c.alpha == 0.5); // true, true
 
 &nbsp;
 
+# Auto-Trace "All Alone" Strings
+
+Based on [HolyC's Auto-Print](https://templeos.holyc.xyz/Wb/Doc/HolyC.html), this feature transforms any standalone Strings (that do not have any impact on the execution/value of its parent expression) into `trace` statements.
+
+```haxe
+"Hello World"; // equivalent to: trace("Hello World");
+
+// prints "one" and "two", but not "three" since it gets stored in "result"
+var result = {
+    "one";
+    "two";
+    "three";
+};
+
+// print other values using either:
+var num = 123;
+
+'$num'; // string interpolation
+
+"" + num; // or concatenation to empty-string
+```
+
+&nbsp;
+
 # `as` Operator
 
 Based on [C#'s `as` operator](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/type-testing-and-cast#as-operator). Converts an expression like this: `var as Type` to `cast(var, Type)`.

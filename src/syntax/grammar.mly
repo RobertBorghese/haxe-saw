@@ -217,6 +217,88 @@ and parse_class_content doc meta flags n p1 s =
 		d_data = fl;
 	}, punion p1 p2)
 
+and convert_strings_to_trace e used =
+	let edi = fst e in
+	let convert_used_list = fun elist -> (List.map (fun f -> convert_strings_to_trace f true) elist) in
+	let convert_used_opt = fun eo -> (match eo with | Some eo0 -> Some (convert_strings_to_trace eo0 true) | _ -> None) in
+	let ed = match edi with
+		| EConst (String(_, _)) when not used -> ECall((EConst(Ident "trace"),snd e), [e])
+		| EArray(e1, e2) -> EArray(convert_strings_to_trace e1 true, convert_strings_to_trace e2 true)
+		| EBinop(binop, e1, e2) -> (
+				let e0 = if not used && binop = OpAdd then
+					(match fst e1 with
+						| EConst (String(_,_)) -> Some ECall((EConst(Ident "trace"),snd e), [e])
+						| _ -> None
+					)
+				else
+					None
+				in
+				match e0 with
+					| Some ee0 -> ee0
+					| _ -> EBinop(binop, convert_strings_to_trace e1 true, convert_strings_to_trace e2 true)
+			)
+		| EField(e0, str, k) -> EField(convert_strings_to_trace e0 true, str, k)
+		| EParenthesis(e1) -> EParenthesis(convert_strings_to_trace e1 used)
+		| EObjectDecl(list) -> EObjectDecl(List.map (fun f -> fst f,(convert_strings_to_trace (snd f) true)) list) (*((string * pos * quote_status) * expr) list*)
+		| EArrayDecl(elist) -> EArrayDecl(convert_used_list elist)
+		| ECall(e0, elist) -> ECall(convert_strings_to_trace e0 true, convert_used_list elist)
+		| ENew(path, elist) -> ENew(path, convert_used_list elist)
+		| EUnop(unop, flag, e0) -> EUnop(unop, flag, convert_strings_to_trace e0 true)
+		| EVars(evarlist) -> EVars(List.map (fun v -> (
+			{
+				ev_name = v.ev_name;
+				ev_final = v.ev_final;
+				ev_static = v.ev_static;
+				ev_type = v.ev_type;
+				ev_expr = (match v.ev_expr with | Some e0 -> Some (convert_strings_to_trace e0 true) | _ -> None);
+				ev_meta = v.ev_meta;
+			}
+		)) evarlist)
+		| EFunction(k, func) -> (
+				match func.f_expr with
+					| Some e1 -> EFunction(k, {
+							f_params = func.f_params;
+							f_args = func.f_args;
+							f_type = func.f_type;
+							f_expr = Some (convert_strings_to_trace e1 false)
+						})
+					| _ -> edi
+			)
+		| EBlock(elist) -> (
+				let len = List.length elist in
+				EBlock(List.mapi (fun i e0 -> (
+					if used && ((i + 1) = len) then
+						e0
+					else
+						convert_strings_to_trace e0 false
+				)) elist)
+			)
+		| EFor(e1, e2) -> EFor(convert_strings_to_trace e1 true, convert_strings_to_trace e2 false)
+		| EIf(e1, e2, e3) -> EIf(convert_strings_to_trace e1 true, convert_strings_to_trace e2 used,
+			(match e3 with | Some e0 -> Some (convert_strings_to_trace e0 used) | _ -> None))
+		| EWhile(e1, e2, f) -> EWhile(convert_strings_to_trace e1 true, convert_strings_to_trace e2 false, f)
+		| ESwitch(e0, list, eo) -> ESwitch(
+				(convert_strings_to_trace e0 true),
+				List.map (fun eeep -> (
+					let (elist, eo1, eo2, p) = eeep in
+					(convert_used_list elist, convert_used_opt eo1, convert_used_opt eo2, p)
+				)) list,
+				(match eo with | Some(Some(eo0),p) -> Some (Some (convert_strings_to_trace eo0 true),p) | _ -> eo)
+			)
+		| ETry(e0, list) -> ETry(convert_strings_to_trace e0 used, List.map (fun ptep -> (
+			let (pn, th, e0, p) = ptep in
+			(pn, th, convert_strings_to_trace e0 used, p)
+		)) list)
+		| EReturn(eo) -> EReturn(convert_used_opt eo)
+		| EThrow(e0) -> EThrow(convert_strings_to_trace e0 true)
+		| ECast(e0, tho) -> ECast(convert_strings_to_trace e0 true, tho)
+		| EIs(e0, th) -> EIs(convert_strings_to_trace e0 true, th)
+		| ETernary(e1, e2, e3) -> ETernary(convert_strings_to_trace e1 true, convert_strings_to_trace e2 true, convert_strings_to_trace e3 true)
+		| EMeta(m, e0) -> EMeta(m, convert_strings_to_trace e0 used)
+		| _ -> edi
+	in
+	(ed, snd e)
+
 and parse_type_decl mode s =
 	match s with parser
 	| [< '(Kwd Import,p1) >] -> parse_import s p1
@@ -227,7 +309,7 @@ and parse_type_decl mode s =
 			let e, p2 = (match s with parser
 				| [< e = expr; s >] ->
 					ignore(semicolon s);
-					Some e, pos e
+					Some (convert_strings_to_trace e false), pos e
 				| [< p = semicolon >] -> None, p
 				| [< >] -> serror()
 			) in
@@ -907,7 +989,7 @@ and parse_function_field doc meta al = parser
 		let e, p2 = (match s with parser
 			| [< e = expr; s >] ->
 				ignore(semicolon s);
-				Some e, pos e
+				Some (convert_strings_to_trace e false), pos e
 			| [< p = semicolon >] -> None, p
 			| [< >] -> serror()
 		) in
