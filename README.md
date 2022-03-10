@@ -1,11 +1,11 @@
-# Haxe (Snatched from Another World)
-Haxe SAW (pronouced "hacksaw"), is a superset of Haxe that adds additional features with minor changes to the Haxe toolkit source code. It was obtained from an alternative universe where it was the standard version of Haxe.
+#  Evil Haxe
+Evil Haxe is a superset of [Haxe](https://haxe.org) that is created to add as many modern and cool features the language can possibly contain without completely breaking compatibility with vanilla Haxe. It was summoned from an alternative universe using a demonic ritual, and it continues to gander at your soul from the darkest depths of our world.
 
-In all seriousness, this is a fork of Haxe created primarily for personal use. The provided features are extremely opinionated, and they are only added due to the (near) impossibility of them being implemented into the official Haxe compiler because of their redundancy, absurdity, or explicit turn-down from Haxe developers.
+In all seriousness, this is a fork of Haxe created primarily for personal use. The provided features are extremely opinionated, and they are only added due to the (near) impossibility of them being implemented into the official Haxe compiler because of their redundancy, absurdity, or explicit rejection.
 
 Also, please note I have no experience in OCaml outside of modifying the Haxe compiler, so there are no guarentees I know what the hell I'm doing... just in case you actually look at the source code.
 
-To learn more about Haxe, visit:\
+To learn more about normal Haxe, visit:\
 [Official Haxe Github](https://github.com/HaxeFoundation/haxe)\
 [Official Haxe Website](https://haxe.org/)\
 [Official Haxe Download](https://haxe.org/download/)
@@ -14,9 +14,9 @@ To learn more about Haxe, visit:\
 
 # [Installation]
 
-1) Download like you would with any version of Haxe from [Releases](https://github.com/RobertBorghese/haxe-saw/releases) or build it yourself.
+1) Download like you would with any version of Haxe from [Releases](https://github.com/RobertBorghese/evil-haxe/releases) or build it yourself.
 2) Add it to your PC's "PATH" if necessary.
-3) And/or if you're using Visual Studio Code add `"haxe.executable"` to your `settings.json` with the location of Haxe-SAW's `haxe.exe` as the value.
+3) And/or if you're using Visual Studio Code add `"haxe.executable"` to your `settings.json` with the location of Evil Haxe's `haxe.exe` as the value.
 
 ---
 
@@ -24,19 +24,19 @@ To learn more about Haxe, visit:\
 
 | Feature | Description |
 | --- | --- |
-| [`with` Feature](https://github.com/RobertBorghese/haxe-saw#with-feature) | Alias expression or fields for block |
-| [Trailing Block Arguments](https://github.com/RobertBorghese/haxe-saw#trailing-block-arguments) | Pretty syntax for passing block expression as final argument |
-| [Object Initializers](https://github.com/RobertBorghese/haxe-saw#object-initializers) | Initialize object fields on `new` expression |
-| [Auto-Trace "All Alone" Strings](https://github.com/RobertBorghese/haxe-saw#auto-trace-all-alone-strings) | Auto-`trace` all alone strings |
-| [`as` Operator](https://github.com/RobertBorghese/haxe-saw#as-operator) | Cast objects using standard `as` operator |
-| [`unless` Expression](https://github.com/RobertBorghese/haxe-saw#unless-expression) | `if` statements for `false` expressions |
-| [Modifier `if` and `unless`](https://github.com/RobertBorghese/haxe-saw#modifier-if-and-unless) | Suffix `if` statements for expressions |
-| [Shorthand Nullable Types](https://github.com/RobertBorghese/haxe-saw#shorthand-nullable-types) | Add a `?` to the end of a type to wrap in `Null<..>` |
-| [Shorthand Array Types](https://github.com/RobertBorghese/haxe-saw#shorthand-array-types) | Add a `[]` to the end of a type to wrap in `Array<..>` |
-| [`if`/`while`/`for` No Parentheses](https://github.com/RobertBorghese/haxe-saw#ifwhilefor-no-parentheses) | Parentheses no longer required for common-use statements |
-| [`const` Keyword](https://github.com/RobertBorghese/haxe-saw#const-keyword) | An alternative to the `final` keyword |
-| [`struct` Keyword](https://github.com/RobertBorghese/haxe-saw#struct-keyword) | An alternative to the `class` keyword that adds the `@:struct` meta |
-| [`fn` Keyword](https://github.com/RobertBorghese/haxe-saw#fn-keyword) | An alternative to the `function` keyword |
+| [`with` Feature](https://github.com/RobertBorghese/evil-haxe#with-feature) | Alias expression or fields for block |
+| [Trailing Block Arguments](https://github.com/RobertBorghese/evil-haxe#trailing-block-arguments) | Pretty syntax for passing block expression as final argument |
+| [Object Initializers](https://github.com/RobertBorghese/evil-haxe#object-initializers) | Initialize object fields on `new` expression |
+| [Auto-Trace "All Alone" Strings](https://github.com/RobertBorghese/evil-haxe#auto-trace-all-alone-strings) | Auto-`trace` all alone strings |
+| [`as` Operator](https://github.com/RobertBorghese/evil-haxe#as-operator) | Cast objects using standard `as` operator |
+| [`unless` Expression](https://github.com/RobertBorghese/evil-haxe#unless-expression) | `if` statements for `false` expressions |
+| [Modifier `if` and `unless`](https://github.com/RobertBorghese/evil-haxe#modifier-if-and-unless) | Suffix `if` statements for expressions |
+| [Shorthand Nullable Types](https://github.com/RobertBorghese/evil-haxe#shorthand-nullable-types) | Add a `?` to the end of a type to wrap in `Null<..>` |
+| [Shorthand Array Types](https://github.com/RobertBorghese/evil-haxe#shorthand-array-types) | Add a `[]` to the end of a type to wrap in `Array<..>` |
+| [`if`/`while`/`for` No Parentheses](https://github.com/RobertBorghese/evil-haxe#ifwhilefor-no-parentheses) | Parentheses no longer required for common-use statements |
+| [`const` Keyword](https://github.com/RobertBorghese/evil-haxe#const-keyword) | An alternative to the `final` keyword |
+| [`struct` Keyword](https://github.com/RobertBorghese/evil-haxe#struct-keyword) | An alternative to the `class` keyword that adds the `@:struct` meta |
+| [`fn` Keyword](https://github.com/RobertBorghese/evil-haxe#fn-keyword) | An alternative to the `function` keyword |
 
 ---
 
