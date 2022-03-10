@@ -190,7 +190,7 @@ str = "Goodbye"; // error: Cannot assign to final
 
 # `struct` Keyword
 
-Based on [C#'s struct keyword](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/struct). Works as a replacement for the `class` keyword, but also adds a `@:struct` metadata to it.
+Based on [C#'s struct keyword](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/struct). Automatically adds `@:struct` metadata to a class declaration if used instead of the `class` keyword.
 
 ```cs
 // equivalent to:
