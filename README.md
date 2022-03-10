@@ -21,19 +21,19 @@ To learn more about Haxe, visit:\
 ---
 # [Features]
 
-[`with` Feature](https://github.com/RobertBorghese/haxe-saw#with-feature)
-[Trailing Block Arguments](https://github.com/RobertBorghese/haxe-saw#trailing-block-arguments)
-[Object Initializers](https://github.com/RobertBorghese/haxe-saw#object-initializers)
-[Auto-Trace "All Alone" Strings](https://github.com/RobertBorghese/haxe-saw#auto-trace-all-alone-strings)
-[`as` Operator](https://github.com/RobertBorghese/haxe-saw#as-operator)
-[`unless` Expression](https://github.com/RobertBorghese/haxe-saw#unless-expression)
-[Modifier `if` and `unless`](https://github.com/RobertBorghese/haxe-saw#modifier-if-and-unless)
-[Shorthand Nullable Types](https://github.com/RobertBorghese/haxe-saw#shorthand-nullable-types)
-[Shorthand Array Types](https://github.com/RobertBorghese/haxe-saw#shorthand-array-types)
-[`if`/`while`/`for` No Parentheses](https://github.com/RobertBorghese/haxe-saw#ifwhilefor-no-parentheses)
-[`const` Keyword](https://github.com/RobertBorghese/haxe-saw#const-keyword)
-[`struct` Keyword](https://github.com/RobertBorghese/haxe-saw#struct-keyword)
-[`fn` Keyword](https://github.com/RobertBorghese/haxe-saw#fn-keyword)
+[`with` Feature](https://github.com/RobertBorghese/haxe-saw#with-feature)\
+[Trailing Block Arguments](https://github.com/RobertBorghese/haxe-saw#trailing-block-arguments)\
+[Object Initializers](https://github.com/RobertBorghese/haxe-saw#object-initializers)\
+[Auto-Trace "All Alone" Strings](https://github.com/RobertBorghese/haxe-saw#auto-trace-all-alone-strings)\
+[`as` Operator](https://github.com/RobertBorghese/haxe-saw#as-operator)\
+[`unless` Expression](https://github.com/RobertBorghese/haxe-saw#unless-expression)\
+[Modifier `if` and `unless`](https://github.com/RobertBorghese/haxe-saw#modifier-if-and-unless)\
+[Shorthand Nullable Types](https://github.com/RobertBorghese/haxe-saw#shorthand-nullable-types)\
+[Shorthand Array Types](https://github.com/RobertBorghese/haxe-saw#shorthand-array-types)\
+[`if`/`while`/`for` No Parentheses](https://github.com/RobertBorghese/haxe-saw#ifwhilefor-no-parentheses)\
+[`const` Keyword](https://github.com/RobertBorghese/haxe-saw#const-keyword)\
+[`struct` Keyword](https://github.com/RobertBorghese/haxe-saw#struct-keyword)\
+[`fn` Keyword](https://github.com/RobertBorghese/haxe-saw#fn-keyword)\
 
 &nbsp;
 
