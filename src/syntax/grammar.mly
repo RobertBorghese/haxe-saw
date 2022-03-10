@@ -278,8 +278,8 @@ and parse_type_decl mode s =
 					d_data = l
 				}, punion p1 p2)
 			end
-		| [< n , p1 = parse_class_flags >] ->
-			parse_class_content doc meta c n p1 s
+		| [< n , p1 , newmeta = parse_class_flags meta >] ->
+			parse_class_content doc newmeta c n p1 s
 		| [< '(Kwd Typedef,p1); name = type_name; tl = parse_constraint_params; '(Binop OpAssign,p2); t = parse_complex_type_at p2; s >] ->
 			(match s with parser
 			| [< '(Semicolon,_) >] -> ()
@@ -299,8 +299,8 @@ and parse_type_decl mode s =
 			| [< >] ->
 				let c2 = parse_common_flags s in
 				begin match s with parser
-				| [< flags,_ = parse_class_flags >] ->
-					parse_class_content doc meta (c @ c2) (HAbstract :: flags) p1 s
+				| [< flags,_,newmeta = parse_class_flags meta >] ->
+					parse_class_content doc newmeta (c @ c2) (HAbstract :: flags) p1 s
 				| [< >] ->
 					serror()
 				end
@@ -326,11 +326,11 @@ and parse_type_decl mode s =
 and parse_class doc meta cflags need_name s =
 	let opt_name = if need_name then type_name else (fun s -> match popt type_name s with None -> "",null_pos | Some n -> n) in
 	match s with parser
-	| [< n , p1 = parse_class_flags; name = opt_name; tl = parse_constraint_params; hl = plist parse_class_herit; '(BrOpen,_); fl, p2 = parse_class_fields (not need_name) p1 >] ->
+	| [< n , p1 , newmeta = parse_class_flags meta; name = opt_name; tl = parse_constraint_params; hl = plist parse_class_herit; '(BrOpen,_); fl, p2 = parse_class_fields (not need_name) p1 >] ->
 		(EClass {
 			d_name = name;
 			d_doc = doc;
-			d_meta = meta;
+			d_meta = newmeta;
 			d_params = tl;
 			d_flags = List.map fst cflags @ n @ hl;
 			d_data = fl;
@@ -502,7 +502,7 @@ and resume tdecl fdecl s =
 			junk_tokens (k - 1);
 			false
 		(* type declaration *)
-		| Eof :: _ | Kwd Import :: _ | Kwd Using :: _ | Kwd Extern :: _ | Kwd Class :: _ | Kwd Interface :: _ | Kwd Enum :: _ | Kwd Typedef :: _ | Kwd Abstract :: _->
+		| Eof :: _ | Kwd Import :: _ | Kwd Using :: _ | Kwd Extern :: _ | Kwd Class :: _ | Const (Ident "struct") :: _ | Kwd Interface :: _ | Kwd Enum :: _ | Kwd Typedef :: _ | Kwd Abstract :: _->
 			junk_tokens (k - 1);
 			false
 		| [] ->
@@ -610,9 +610,10 @@ and parse_meta_name p1 = parser
 and parse_enum_flags = parser
 	| [< '(Kwd Enum,p) >] -> [] , p
 
-and parse_class_flags = parser
-	| [< '(Kwd Class,p) >] -> [] , p
-	| [< '(Kwd Interface,p) >] -> [HInterface] , p
+and parse_class_flags meta = parser
+	| [< '(Const (Ident "struct"),p) >] -> [] , p , ((Meta.Struct,[],null_pos) :: meta)
+	| [< '(Kwd Class,p) >] -> [] , p , meta
+	| [< '(Kwd Interface,p) >] -> [HInterface] , p , meta
 
 and parse_complex_type_at p = parser
 	| [< t = parse_complex_type >] -> t

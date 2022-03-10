@@ -188,6 +188,21 @@ str = "Goodbye"; // error: Cannot assign to final
 
 &nbsp;
 
+# `struct` Keyword
+
+Based on [C#'s struct keyword](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/struct). Works as a replacement for the `class` keyword, but also adds a `@:struct` metadata to it.
+
+```cs
+// equivalent to:
+// @:struct class MyStruct
+struct MyStruct {
+    public var data = 123;
+    public function new(d: Int) { data = d; }
+}
+```
+
+&nbsp;
+
 # `fn` Keyword
 
 Based on [Rust's function keyword](https://doc.rust-lang.org/book/ch03-03-how-functions-work.html). Can be used as a replacement for `function` in almost all cases.
