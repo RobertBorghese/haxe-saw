@@ -19,7 +19,8 @@ To learn more about Haxe, visit:\
 3) And/or if you're using Visual Studio Code add `"haxe.executable"` to your `settings.json` with the location of Haxe-SAW's `haxe.exe` as the value.
 
 ---
-# [Features]
+
+# [New Features]
 
 | Feature | Description |
 | --- | --- |
@@ -36,6 +37,10 @@ To learn more about Haxe, visit:\
 | [`const` Keyword](https://github.com/RobertBorghese/haxe-saw#const-keyword) | An alternative to the `final` keyword |
 | [`struct` Keyword](https://github.com/RobertBorghese/haxe-saw#struct-keyword) | An alternative to the `class` keyword that adds the `@:struct` meta |
 | [`fn` Keyword](https://github.com/RobertBorghese/haxe-saw#fn-keyword) | An alternative to the `function` keyword |
+
+---
+
+# [Feature Explanations]
 
 &nbsp;
 
