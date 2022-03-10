@@ -21,19 +21,21 @@ To learn more about Haxe, visit:\
 ---
 # [Features]
 
-[`with` Feature](https://github.com/RobertBorghese/haxe-saw#with-feature)\
-[Trailing Block Arguments](https://github.com/RobertBorghese/haxe-saw#trailing-block-arguments)\
-[Object Initializers](https://github.com/RobertBorghese/haxe-saw#object-initializers)\
-[Auto-Trace "All Alone" Strings](https://github.com/RobertBorghese/haxe-saw#auto-trace-all-alone-strings)\
-[`as` Operator](https://github.com/RobertBorghese/haxe-saw#as-operator)\
-[`unless` Expression](https://github.com/RobertBorghese/haxe-saw#unless-expression)\
-[Modifier `if` and `unless`](https://github.com/RobertBorghese/haxe-saw#modifier-if-and-unless)\
-[Shorthand Nullable Types](https://github.com/RobertBorghese/haxe-saw#shorthand-nullable-types)\
-[Shorthand Array Types](https://github.com/RobertBorghese/haxe-saw#shorthand-array-types)\
-[`if`/`while`/`for` No Parentheses](https://github.com/RobertBorghese/haxe-saw#ifwhilefor-no-parentheses)\
-[`const` Keyword](https://github.com/RobertBorghese/haxe-saw#const-keyword)\
-[`struct` Keyword](https://github.com/RobertBorghese/haxe-saw#struct-keyword)\
-[`fn` Keyword](https://github.com/RobertBorghese/haxe-saw#fn-keyword)\
+| Feature | Description |
+| --- | --- |
+| [`with` Feature](https://github.com/RobertBorghese/haxe-saw#with-feature) | Alias expression or fields for block |
+| [Trailing Block Arguments](https://github.com/RobertBorghese/haxe-saw#trailing-block-arguments) | Pretty syntax for passing block expression as final argument |
+| [Object Initializers](https://github.com/RobertBorghese/haxe-saw#object-initializers) | Initialize object fields on `new` expression |
+| [Auto-Trace "All Alone" Strings](https://github.com/RobertBorghese/haxe-saw#auto-trace-all-alone-strings) | Auto-`trace` all alone strings |
+| [`as` Operator](https://github.com/RobertBorghese/haxe-saw#as-operator) | Cast objects using standard `as` operator |
+| [`unless` Expression](https://github.com/RobertBorghese/haxe-saw#unless-expression) | `if` statements for `false` expressions |
+| [Modifier `if` and `unless`](https://github.com/RobertBorghese/haxe-saw#modifier-if-and-unless) | Suffix `if` statements for expressions |
+| [Shorthand Nullable Types](https://github.com/RobertBorghese/haxe-saw#shorthand-nullable-types) | Add a `?` to the end of a type to wrap in `Null<..>` |
+| [Shorthand Array Types](https://github.com/RobertBorghese/haxe-saw#shorthand-array-types) | Add a `[]` to the end of a type to wrap in `Array<..>` |
+| [`if`/`while`/`for` No Parentheses](https://github.com/RobertBorghese/haxe-saw#ifwhilefor-no-parentheses) | Parentheses no longer required for common-use statements |
+| [`const` Keyword](https://github.com/RobertBorghese/haxe-saw#const-keyword) | An alternative to the `final` keyword |
+| [`struct` Keyword](https://github.com/RobertBorghese/haxe-saw#struct-keyword) | An alternative to the `class` keyword that adds the `@:struct` meta |
+| [`fn` Keyword](https://github.com/RobertBorghese/haxe-saw#fn-keyword) | An alternative to the `function` keyword |
 
 &nbsp;
 
