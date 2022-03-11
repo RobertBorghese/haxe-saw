@@ -80,7 +80,7 @@ end
 
 let check_assign ctx e =
 	if ctx.com.display.dms_error_policy <> EPIgnore then match e.eexpr with
-	| TLocal v when has_var_flag v VFinal ->
+	| TLocal v when has_var_flag v VFinal && not (Meta.has Meta.FinalAccess ctx.meta) ->
 		typing_error "Cannot assign to final" e.epos
 	| TLocal {v_extra = None} | TArray _ | TField _ | TIdent _ ->
 		()

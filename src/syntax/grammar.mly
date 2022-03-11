@@ -1229,6 +1229,10 @@ and parse_block_var = parser
 		(vl,punion p1 p2)
 
 and parse_block_elt = parser
+	| [< '(Kwd Var,p1); s >] ->
+		(match s with parser
+			| [< '(POpen,p2); s >] -> unpack_var s p1
+			| [< vl = parse_var_decls false p1; p2 = semicolon >] -> (EVars vl,punion p1 p2))
 	| [< (vl,p) = parse_block_var >] ->
 		(EVars vl,p)
 	| [< '(Kwd Inline,p1); s >] ->
@@ -1428,6 +1432,21 @@ and arrow_first_param e s =
 	| _ ->
 		serror())
 
+and unpack_var s p1 =
+	(let rec loop vars = (match s with parser
+		| [< meta,name,final,t,pn = parse_var_decl_head false; s >] -> (
+				let v = mk_evar ~final ?t ~meta (name,pn) in
+				let ev = (EVars([v]),pn) in
+				(match s with parser
+					| [< '(Comma,_) >] -> loop (ev :: vars)
+					| [< '(PClose,_); ps = semicolon >] -> (ev :: vars),ps)
+			)
+		| [< '(PClose,pc); ps = semicolon >] -> vars,ps
+	) in
+	let vars,pend = loop [] in
+	let p = punion p1 pend in
+	EMeta((Meta.from_string ":mergeBlock",[],null_pos), (EBlock(vars),p)),p)
+
 and expr = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->
 		begin try
@@ -1550,6 +1569,7 @@ and expr = parser
 		) in
 		(EIf ((EUnop(Not, Prefix, fst expressions),(pos (fst expressions))),snd expressions,e2), punion p (match e2 with None -> pos (snd expressions) | Some e -> pos e))
 
+	| [< '(Kwd Var,p1); '(POpen,p2); s >] -> unpack_var s p1
 	| [< '(Kwd Var,p1); v = parse_var_decl false >] -> (EVars [v],p1)
 	| [< '(Kwd (Final|Const),p1); v = parse_var_decl true >] -> (EVars [v],p1)
 	| [< '(Const c,p); s >] -> expr_next (EConst c,p) s

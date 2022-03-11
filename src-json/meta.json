@@ -353,6 +353,12 @@
 		"links": ["https://haxe.org/manual/class-field-final.html"]
 	},
 	{
+		"name": "FinalAccess",
+		"metadata": ":finalAccess",
+		"doc": "Allow final assign to anything for the annotated expression.",
+		"targets": ["TExpr"]
+	},
+	{
 		"devcomment": "this used to have UsedOn TObjectDecl(_)",
 		"name": "Fixed",
 		"metadata": ":fixed",
