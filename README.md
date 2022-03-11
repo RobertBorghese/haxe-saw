@@ -254,19 +254,19 @@ Based on [Rust's function keyword](https://doc.rust-lang.org/book/ch03-03-how-fu
 
 ```haxe
 fn test() {
-	trace("do thing");
+    trace("do thing");
 }
 
 fn main() {
-	// "fn" can still be used as variable name for compatibility...
-	var fn = () -> {
-		trace("i am smol");
-	};
+    // "fn" can still be used as variable name for compatibility...
+    var fn = () -> {
+        trace("i am smol");
+    };
 
-	// ...as a result, it can't be used to create functions in expressions.
-	// Use lambdas instead.
-	var fn2 = fn() { // invalid
-		trace("so am i");
-	};
+    // ...as a result, it can't be used to create functions in expressions.
+    // Use lambdas instead.
+    var fn2 = fn() { // invalid
+        trace("so am i");
+    };
 }
 ```
