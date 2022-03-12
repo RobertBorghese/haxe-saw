@@ -25,7 +25,7 @@ To learn more about normal Haxe, visit:\
 | Feature | Description |
 | --- | --- |
 | [Named Destructuring](https://github.com/RobertBorghese/evil-haxe#named-destructuring) | Unpack named fields into new variables |
-| [Ordered Destructuring](https://github.com/RobertBorghese/evil-haxe#ordered-destructuring) | Unpack ordered fields from `Array`s, `enum`s, or `class`es with component functions |
+| [Ordered Destructuring](https://github.com/RobertBorghese/evil-haxe#ordered-destructuring) | Unpack ordered fields from `Array`s, `enum`s, or special `class`es |
 | [`with` Feature](https://github.com/RobertBorghese/evil-haxe#with-feature) | Alias expression or fields for block |
 | [Trailing Block Arguments](https://github.com/RobertBorghese/evil-haxe#trailing-block-arguments) | Pretty syntax for passing block expression as final argument |
 | [Object Initializers](https://github.com/RobertBorghese/evil-haxe#object-initializers) | Initialize object fields on `new` expression |
@@ -49,7 +49,7 @@ To learn more about normal Haxe, visit:\
 
 # Named Destructuring
 
-Multiple variables can be initialized from an object with properties or fields. The names of the variables will be the field names that are retrieved from the object.
+Based on [JavaScript's object destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#object_destructuring), multiple variables can be initialized from an object with properties or fields. The names of the variables will be the field names that are retrieved from the object.
 
 ```haxe
 var { length } = "abcd";
@@ -75,7 +75,7 @@ trace(level, time); // 1, 100.0
 
 # Ordered Destructuring
 
-Multiple variables can be initialized from an instance of `Array`, an `enum`, a class with `componentX()` functions, or an abstract with array-access. The order of the identifiers dictactes the value they are assigned; empty identifiers can be used to skip unwanted values.
+Based on [Kotlin's destructuring](https://kotlinlang.org/docs/destructuring-declarations.html), multiple variables can be initialized from an instance of `Array`, an `enum`, a class with `componentX()` functions, or an abstract with array-access. The order of the identifiers dictactes the value they are assigned; empty identifiers can be used to skip unwanted values.
 
 ```haxe
 /** array-access **/
