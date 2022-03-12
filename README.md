@@ -24,6 +24,8 @@ To learn more about normal Haxe, visit:\
 
 | Feature | Description |
 | --- | --- |
+| [Named Destructuring](https://github.com/RobertBorghese/evil-haxe#named-destructuring) | Unpack named fields into new variables |
+| [Ordered Destructuring](https://github.com/RobertBorghese/evil-haxe#ordered-destructuring) | Unpack ordered fields from `Array`s, `enum`s, or `class`es with component functions |
 | [`with` Feature](https://github.com/RobertBorghese/evil-haxe#with-feature) | Alias expression or fields for block |
 | [Trailing Block Arguments](https://github.com/RobertBorghese/evil-haxe#trailing-block-arguments) | Pretty syntax for passing block expression as final argument |
 | [Object Initializers](https://github.com/RobertBorghese/evil-haxe#object-initializers) | Initialize object fields on `new` expression |
@@ -34,6 +36,7 @@ To learn more about normal Haxe, visit:\
 | [Shorthand Nullable Types](https://github.com/RobertBorghese/evil-haxe#shorthand-nullable-types) | Add a `?` to the end of a type to wrap in `Null<..>` |
 | [Shorthand Array Types](https://github.com/RobertBorghese/evil-haxe#shorthand-array-types) | Add a `[]` to the end of a type to wrap in `Array<..>` |
 | [`if`/`while`/`for` No Parentheses](https://github.com/RobertBorghese/evil-haxe#ifwhilefor-no-parentheses) | Parentheses no longer required for common-use statements |
+| [`@:finalAccess` Meta](https://github.com/RobertBorghese/evil-haxe#finalaccess-meta) | Allow assigning to `final` variables |
 | [`const` Keyword](https://github.com/RobertBorghese/evil-haxe#const-keyword) | An alternative to the `final` keyword |
 | [`struct` Keyword](https://github.com/RobertBorghese/evil-haxe#struct-keyword) | An alternative to the `class` keyword that adds the `@:struct` meta |
 | [`fn` Keyword](https://github.com/RobertBorghese/evil-haxe#fn-keyword) | An alternative to the `function` keyword |
