@@ -44,6 +44,72 @@ To learn more about normal Haxe, visit:\
 
 &nbsp;
 
+# Named Destructuring
+
+Multiple variables can be initialized from an object with properties or fields. The names of the variables will be the field names that are retrieved from the object.
+
+```haxe
+var { length } = "abcd";
+trace(length); // 4
+
+// ---
+
+class GameData {
+    public var level: Int;
+    public var coins: Int;
+    public var time: Float;
+
+    public function new() {
+        level = 1; coins = 0; time = 100.0;
+    }
+}
+
+final { level, time } = new GameData();
+trace(level, time); // 1, 100.0
+```
+
+&nbsp;
+
+# Ordered Destructuring
+
+Multiple variables can be initialized from an instance of `Array`, an `enum`, a class with `componentX()` functions, or an abstract with array-access. The order of the identifiers dictactes the value they are assigned; empty identifiers can be used to skip unwanted values.
+
+```haxe
+/** array-access **/
+var (first, _, third) = [for(i in 1...10) i];
+trace(first, third); // 1, 3
+
+
+/** enum **/
+enum Suit {
+    Fancy(buttons: Int, size: Int);
+    Simple;
+}
+
+var (_, s) = Fancy(12, 24);
+trace(s); // 24
+
+
+/** class **/
+class Animal {
+    public var name: String;
+    public var legs: Int;
+    public var arms: Int;
+    public function new(n: String, l: Int, a: Int) {
+        name = n; legs = l; arms = a;
+    }
+
+    public function component1() return name;
+    public function component2() return legs;
+    public function component3() return arms;
+}
+
+var (aniName, aniLegs, aniArms) = new Animal("Dog", 4, 0);
+trace(aniName, aniLegs, aniArms); // "Dog", 4, 0
+```
+
+&nbsp;
+
 # `with` Feature
 
 Syntax sugar for aliasing an expression's resulting value or the value's fields to a new scope.
@@ -217,6 +283,19 @@ if Math.random() < 0.5 trace("50% chance of seeing this");
 // for
 for i in arr {
     trace(i);
+}
+```
+
+&nbsp;
+
+# `@:finalAccess` Meta
+
+Similar to `@:privateAccess`, this metadata allows for `final` variables to be assigned. 
+
+```js
+final str = "Hello";
+@:finalAccess {
+    str = "Goodbye"; // valid
 }
 ```
 

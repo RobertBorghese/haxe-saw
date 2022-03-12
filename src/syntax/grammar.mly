@@ -1231,10 +1231,14 @@ and parse_block_var = parser
 and parse_block_elt = parser
 	| [< '(Kwd Var,p1); s >] ->
 		(match s with parser
-			| [< '(POpen,p2); s >] -> unpack_var s p1
+			| [< '(POpen,p2); s >] -> unpack_var s p1 false false
+			| [< '(BrOpen,p2); s >] -> unpack_var s p1 false true
 			| [< vl = parse_var_decls false p1; p2 = semicolon >] -> (EVars vl,punion p1 p2))
-	| [< (vl,p) = parse_block_var >] ->
-		(EVars vl,p)
+	| [< '(Kwd (Final|Const),p1); s >] ->
+		(match s with parser
+			| [< '(POpen,p2); s >] -> unpack_var s p1 true false
+			| [< '(BrOpen,p2); s >] -> unpack_var s p1 true true
+			| [< vl = parse_var_decls true p1; p2 = semicolon >] -> (EVars vl,punion p1 p2))
 	| [< '(Kwd Inline,p1); s >] ->
 		begin match s with parser
 		| [< '(((Kwd Function)|(Const (Ident "fn"))),_); e = parse_function p1 true; _ = semicolon >] -> e
@@ -1340,6 +1344,20 @@ and parse_var_decl_head final s =
 		in
 		loop meta
 
+and parse_var_decl_head_w_post_question final s =
+	let meta = parse_meta s in
+	match s with parser
+	| [< name, p = dollar_ident; pq = popt question_mark; t = popt parse_type_hint >] -> (meta,name,final,t,p,pq)
+	| [< >] ->
+		(* This nonsense is here for the var @ case in issue #9639 *)
+		let rec loop meta = match meta with
+			| (Meta.HxCompletion,_,p) :: _ -> (meta,"",false,None,null_pos,None)
+			| _ :: meta -> loop meta
+			| [] -> no_keyword "variable name" s
+		in
+		loop meta
+
+
 and parse_var_assignment = parser
 	| [< '(Binop OpAssign,p1); s >] ->
 		Some (secure_expr s)
@@ -1432,20 +1450,31 @@ and arrow_first_param e s =
 	| _ ->
 		serror())
 
-and unpack_var s p1 =
-	(let rec loop vars = (match s with parser
-		| [< meta,name,final,t,pn = parse_var_decl_head false; s >] -> (
-				let v = mk_evar ~final ?t ~meta (name,pn) in
-				let ev = (EVars([v]),pn) in
-				(match s with parser
-					| [< '(Comma,_) >] -> loop (ev :: vars)
-					| [< '(PClose,_); ps = semicolon >] -> (ev :: vars),ps)
-			)
-		| [< '(PClose,pc); ps = semicolon >] -> vars,ps
-	) in
-	let vars,pend = loop [] in
-	let p = punion p1 pend in
-	EMeta((Meta.from_string ":mergeBlock",[],null_pos), (EBlock(vars),p)),p)
+and unpack_var s p1 final bracket = (
+		let rec loop vars = (match s with parser
+			| [< meta,name,final,t,pn,pq = parse_var_decl_head_w_post_question final; s >] -> (
+					let optional = (match pq with | Some _ -> true | None -> false) in
+					let v = mk_evar ~final ?t ~meta (name,pn) in
+					let ev = (if optional then
+						(EMeta((Meta.from_string ":optional", [], null_pos), (EVars([v]),pn)),pn)
+					else
+						(EVars([v]),pn)
+					) in
+					(match s with parser
+						| [< '(Comma,_) >] -> loop (ev :: vars)
+						| [< '(PClose,pc) when not bracket >] -> (ev :: vars),pc
+						| [< '(BrClose,pc) when bracket >] -> (ev :: vars),pc)
+				)
+			| [< '(PClose,pc) when not bracket >] -> vars,pc
+			| [< '(BrClose,pc) when bracket >] -> vars,pc
+		) in
+		let vars,_ = loop [] in
+		let expr,pend = (match s with parser
+			| [< '(Binop OpAssign,ap); e = expr; pend = semicolon >] -> e,pend) in
+		let p = punion p1 pend in
+		let module_type = (if bracket then "FieldUnpack" else "OrderedUnpack") in
+		(ECall((efield((efield((EConst(Ident "evil"),null_pos), module_type),null_pos), "unpack"),null_pos), [expr] @ (List.rev vars)),p)
+	)
 
 and expr = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->
@@ -1569,9 +1598,18 @@ and expr = parser
 		) in
 		(EIf ((EUnop(Not, Prefix, fst expressions),(pos (fst expressions))),snd expressions,e2), punion p (match e2 with None -> pos (snd expressions) | Some e -> pos e))
 
-	| [< '(Kwd Var,p1); '(POpen,p2); s >] -> unpack_var s p1
-	| [< '(Kwd Var,p1); v = parse_var_decl false >] -> (EVars [v],p1)
-	| [< '(Kwd (Final|Const),p1); v = parse_var_decl true >] -> (EVars [v],p1)
+	| [< '(Kwd Var,p1); s >] -> (
+		match s with parser
+			| [< '(POpen,p2); s >] -> unpack_var s p1 false false
+			| [< '(BrOpen,p2); s >] -> unpack_var s p1 false true
+			| [< v = parse_var_decl false >] -> (EVars [v],p1)
+	)
+	| [< '(Kwd (Final|Const),p1); s >] -> (
+		match s with parser
+			| [< '(POpen,p2); s >] -> unpack_var s p1 true false
+			| [< '(BrOpen,p2); s >] -> unpack_var s p1 true true
+			| [< v = parse_var_decl true >] -> (EVars [v],p1)
+	)
 	| [< '(Const c,p); s >] -> expr_next (EConst c,p) s
 	| [< '(Kwd This,p); s >] -> expr_next (EConst (Ident "this"),p) s
 	| [< '(Kwd Abstract,p); s >] -> expr_next (EConst (Ident "abstract"),p) s
