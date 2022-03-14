@@ -327,7 +327,7 @@ for i in arr {
 
 Similar to `@:privateAccess`, this metadata allows for `final` variables to be assigned. 
 
-```js
+```haxe
 final str = "Hello";
 @:finalAccess {
     str = "Goodbye"; // valid
