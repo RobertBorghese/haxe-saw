@@ -922,7 +922,9 @@ and parse_function_type_next tl p1 = parser
 				CTFunction (tl,ct), punion p1 pa
 			end else serror()
 		end
-	| [< >] -> serror ()
+	| [< >] -> (
+		CTPath (mk_type_path ~params:(List.map (fun t -> TPType t) tl) ~sub:(Printf.sprintf "Tuple%d" (List.length tl)) ([],"Tuple")),p1
+	)
 
 and parse_type_anonymous s =
 	let p0 = popt question_mark s in
@@ -1450,6 +1452,11 @@ and arrow_first_param e s =
 	| _ ->
 		serror())
 
+and parse_fun_param_or_expr s =
+	(match s with parser
+		| [< '(Question,_); e = expr >] -> (e,true)
+		| [< e = expr >] -> (e,false))
+
 and unpack_var s p1 final bracket = (
 		let rec loop vars = (match s with parser
 			| [< meta,name,final,t,pn,pq = parse_var_decl_head_w_post_question final; s >] -> (
@@ -1677,8 +1684,26 @@ and expr = parser
 			arrow_function p1 al er s
 		| [<  e = expr; s >] -> (match s with parser
 			| [< '(PClose,p2); s >] -> expr_next (EParenthesis e, punion p1 p2) s
-			| [< '(Comma,pc); al = psep Comma parse_fun_param; '(PClose,_); er = arrow_expr; >] ->
-				arrow_function p1 ((arrow_first_param e s) :: al) er s
+			| [< '(Comma,pc); al = psep Comma parse_fun_param_or_expr; '(PClose,pclose); s >] -> (
+				let all = ((e,false) :: al) in
+				(match s with parser
+					| [< '(Arrow,_); er = expr;(* er = arrow_expr <- throws error ;*) s >] -> (
+						arrow_function p1 (List.map (fun ea -> (
+							let (e,opt) = ea in
+							let (a,b,c,d,e) = arrow_first_param e s in
+							(a,opt,c,d,e)
+						)) all) er s
+					)
+					| [< s >] -> (
+						expr_next (ENew(({
+							tpackage = [];
+							tname = "Tuple";
+							tparams = [];
+							tsub = Some(Printf.sprintf "Tuple%d" (List.length all));
+						}, null_pos), (List.map (fun ea -> (let (e,_) = ea in e)) all )), (punion p1 pclose)) s
+					)
+				)
+			)
 			| [< t,pt = parse_type_hint; s >] -> (match s with parser
 				| [< '(PClose,p2); s >] -> expr_next (EParenthesis (ECheckType(e,(t,pt)),punion p1 p2), punion p1 p2) s
 				| [< '(Comma,pc); al = psep Comma parse_fun_param; '(PClose,_); er = arrow_expr; >] ->
@@ -1883,10 +1908,10 @@ and expr_next' e1 = parser
 		let p2 = pos t in
 		let e_is = EIs (e1,t), (punion p1 p2) in
 		expr_next e_is s
-	| [< '(Const (Ident "as"),p_as); t = parse_complex_type >] ->
+	| [< '(Const (Ident "as"),p_as); t = parse_complex_type; s >] ->
 		let p1 = pos e1 in
 		let p2 = pos t in
-		ECast(e1, (Some t)),punion p1 p2
+		expr_next (ECast(e1, (Some t)),punion p1 p2) s
 	| [< s >] -> (match Stream.peek s with
 			| Some (BrOpen,_) when (not !expecting_expr_next) ->
 				(let ex = expr s in

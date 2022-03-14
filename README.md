@@ -24,6 +24,7 @@ To learn more about normal Haxe, visit:\
 
 | Feature | Description |
 | --- | --- |
+| [Tuples](https://github.com/RobertBorghese/evil-haxe#tuples) | Platform-optimal tuples using standard parentheses syntax |
 | [Named Destructuring](https://github.com/RobertBorghese/evil-haxe#named-destructuring) | Unpack named fields into new variables |
 | [Ordered Destructuring](https://github.com/RobertBorghese/evil-haxe#ordered-destructuring) | Unpack ordered fields from `Array`s, `enum`s, or special `class`es |
 | [`with` Feature](https://github.com/RobertBorghese/evil-haxe#with-feature) | Alias expression or fields for block |
@@ -44,6 +45,34 @@ To learn more about normal Haxe, visit:\
 ---
 
 # [Feature Explanations]
+
+&nbsp;
+
+# Tuples
+
+Based on [C#'s tuples](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-tuples), these are like Haxe's anonymous structures, but with better performance on static platforms. Specifically, Tuples on HashLink, C, C++ (TODO), and C# are value types, so they work well as temporary values and return types and do not cause performance issues with GC. On all platforms, Tuples have more performant field-access, as they are essentially classes with the minimal fields required to store the necessary data. On the other hand, Tuples do not provide any dynamic-access or reflection capabilities.
+
+```haxe
+// create tuple using mixed types using parentheses
+var myTuple = (123, "Hello", true);
+
+// access using itemX
+trace(myTuple.item1); // 123
+trace(myTuple.item2); // "Hello"
+
+// describe tuple type using multiple types in parentheses (order matters)
+function getTuple(): (String, Int) {
+    return ("Dolphins", 300);
+}
+
+// tuples have built-in == and != operators
+if(getTuple() == ("Dolphins", 300)) {
+    trace("There are 300 Dolphins");
+}
+
+// tuples have toString() as well
+trace((1, 2, 3, "four")); // (1, 2, 3, "four")
+```
 
 &nbsp;
 
@@ -75,13 +104,16 @@ trace(level, time); // 1, 100.0
 
 # Ordered Destructuring
 
-Based on [Kotlin's destructuring](https://kotlinlang.org/docs/destructuring-declarations.html), multiple variables can be initialized from an instance of `Array`, an `enum`, a class with `componentX()` functions, or an abstract with array-access. The order of the identifiers dictactes the value they are assigned; empty identifiers can be used to skip unwanted values.
+Based on [Kotlin's destructuring](https://kotlinlang.org/docs/destructuring-declarations.html), multiple variables can be initialized from an instance of `Array`, a `TupleX`, an `enum`, a class with `componentX()` functions, or an abstract with array-access. The order of the identifiers dictactes the value they are assigned; empty identifiers can be used to skip unwanted values.
 
 ```haxe
 /** array-access **/
 var (first, _, third) = [for(i in 1...10) i];
 trace(first, third); // 1, 3
 
+/** tuple **/
+var (_, str) = (123, "Hello World!");
+trace(str); // "Hello World!"
 
 /** enum **/
 enum Suit {
