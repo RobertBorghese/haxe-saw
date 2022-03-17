@@ -1912,6 +1912,10 @@ and expr_next' e1 = parser
 		let p1 = pos e1 in
 		let p2 = pos t in
 		expr_next (ECast(e1, (Some t)),punion p1 p2) s
+	| [< '(Const (Ident "isa"),p_isa); t = parse_complex_type; s >] ->
+		let p1 = pos e1 in
+		let p2 = pos t in
+		expr_next (ECheckType(e1, t),punion p1 p2) s
 	| [< s >] -> (match Stream.peek s with
 			| Some (BrOpen,_) when (not !expecting_expr_next) ->
 				(let ex = expr s in

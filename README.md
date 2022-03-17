@@ -238,6 +238,17 @@ var int = float as Int;
 
 &nbsp;
 
+# `isa` Operator
+
+Similar to the `as` operator, but transforms into the compile-time [type-check expression](https://haxe.org/manual/expression-type-check.html): `var isa Type` to `(var : Type)`.
+
+```haxe
+// inform compiler return-type is Transform
+var comp = gameObject.GetComponent() isa Transform;
+```
+
+&nbsp;
+
 # `unless` Expression
 
 Based on [Ruby's `unless`](https://docs.ruby-lang.org/en/3.1/doc/syntax/control_expressions_rdoc.html#label-unless+Expression), this keyword can be used just like `if`, but the provided expression must be false to execute the block.
